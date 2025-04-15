@@ -1,0 +1,267 @@
+{% load static %}
+<html>
+{% block css %}
+
+{% endblock %}
+<head>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* CSS 渐变背景样式 */
+        #gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: gradientBackground 10s ease infinite;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            z-index: -3;
+        }
+
+        @keyframes gradientBackground {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* SVG 波浪背景样式 */
+        svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        /* 粒子背景样式 */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* 内容区域样式 */
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            padding-top: 20vh;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+    <title>Dynamic Background with CSS</title>
+</head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>系统登录</title>
+
+    <link href="../static/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="../static/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <link href="../static/css/animate.css" rel="stylesheet">
+    <link href="../static/css/style.css?v=2.2.0" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+<div style="font-family:'SimSun';font-size:70px;color:white;margin-top:50px;margin-left:70px;">欢迎使用基于大语言模型的
+</div>
+<div style="font-family:'SimSun';font-size:70px;color:white;margin-top:5px;margin-left:250px;">微博热点舆情分析系统</div>
+<div class="middle-box text-center loginscreen  animated fadeInDown" style="margin-left:300px;padding-top:0px;">
+    <div>
+        <div>
+            <h1 class="logo-name">wb</h1>
+        </div>
+        <form class="m-t" role="form" action="/login/" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="用户名" required="" name="username">
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" placeholder="电子邮件" required="" name="email">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="密码" required="" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
+            <p style="color: red;text-align: center">{{ error_msg }}</p>
+            <p class="text-muted text-center"><a href="/register/"><small>忘记密码了？</small></a> | <a
+                    href="/register/">注册一个新账号</a>
+            </p>
+        </form>
+    </div>
+</div>
+<div id="gradient-bg"></div>
+
+    <!-- SVG 波浪背景 -->
+    <svg viewBox="0 0 1440 320">
+        <path fill="#0099ff" fill-opacity="0.3"
+            d="M0,256L48,234.7C96,213,192,171,288,149.3C384,128,480,128,576,149.3C672,171,768,213,864,229.3C960,245,1056,235,1152,213.3C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+            <animate attributeName="d" dur="15s" repeatCount="indefinite"
+                values="M0,256L48,234.7C96,213,192,171,288,149.3C384,128,480,128,576,149.3C672,171,768,213,864,229.3C960,245,1056,235,1152,213.3C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z;M0,224L48,202.7C96,181,192,139,288,133.3C384,128,480,160,576,170.7C672,181,768,171,864,176C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" />
+        </path>
+    </svg>
+
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+
+    <!-- 内容区域 -->
+    <div class="content">
+        <h1>Combined Dynamic Background</h1>
+        <p>Enjoy the amazing dynamic background effects!</p>
+        <button onclick="alert('You clicked the button!')">Click Me</button>
+    </div>
+
+    <!-- 引入 particles.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        // 初始化粒子效果
+        particlesJS.load('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    },
+                    "image": {
+                        "src": "img/github.svg",
+                        "width": 100,
+                        "height": 100
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 4,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+<script src="../static/js/jquery-2.1.1.min.js"></script>
+<script src="../static/js/bootstrap.min.js?v=3.4.0"></script>
+
+
+
+</body>
+
+
+</html>

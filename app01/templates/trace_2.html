@@ -1,0 +1,1662 @@
+{% extends "new_layout_2.html" %}
+{% load static %}
+{% block css %}
+
+{#    <link href="../static/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">#}
+    <link href="../static/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{##}
+{#    <link href="../static/css/animate.css" rel="stylesheet">#}
+{#    <link href="../static/css/style.css?v=2.2.0" rel="stylesheet">#}
+    <!-- 新增的样式 -->
+    <style>
+
+
+        /* 面板样式 */
+        .panel {
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .panel-default > .panel-heading {
+            background-color: #fff;
+            border-bottom: 1px solid #e4e5e7;
+            color: #b5d9ff;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+            padding: 15px 20px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .panel-title img {
+            margin-right: 10px;
+        }
+
+        .panel-body {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* 标签页样式 */
+        .nav-tabs {
+            border-bottom: 2px solid #e4e5e7;
+        }
+
+        .nav-tabs > li > a {
+            color: #666;
+            font-weight: 500;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+            padding: 10px 20px;
+            border: none;
+        }
+
+        .nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus {
+            color: #d5ffe7;
+            background-color: #fff;
+            border: none;
+            border-bottom: 3px solid #d1ffe5;
+        }
+        .nav-tabs > li > a:hover {
+            background-color: #f5f7fa;
+            border-bottom: 3px solid #ddd;
+        }
+
+        /* 数据总览样式 */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .num {
+            padding: 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .num:hover {
+            background-color: #f5f7fa;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .num p:first-child {
+            font-size: 24px;
+            font-weight: 600;
+            color: #b8dbff;
+            margin-bottom: 5px;
+        }
+        .num p:last-child {
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* 热搜记录样式 */
+        .hot-search-record {
+            background-color: #f9f9f9;
+            border-left: 4px solid #b8ffd9;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .record-item {
+            margin-bottom: 15px;
+        }
+
+        .record-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .record-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #b8dbff;
+        }
+        .record-rules {
+            background-color: #f5f7fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+        }
+
+        /* 表格样式 */
+        .dataTables-example {
+            width: 100% !important;
+        }
+
+        .dataTables-example thead th {
+            background-color: #b5d9ff;
+            color: white;
+            font-weight: 600;
+            padding: 12px 15px;
+        }
+
+        .dataTables-example tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e4e5e7;
+            vertical-align: top;
+        }
+
+        .dataTables-example tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .dataTables-example tbody tr:hover {
+            background-color: #f1f8e9;
+        }
+         /* 情感分析特殊样式 */
+        .sentiment-positive {
+            color: #ffebf5;
+            font-weight: bold;
+        }
+
+
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .data-row {
+                flex-direction: column;
+            }
+
+            .col-lg-4 {
+                margin-bottom: 15px;
+            }
+
+            .panel-body {
+                padding: 15px;
+            }
+        }
+        /* 分隔线样式 */
+        hr {
+            border-top: 1px solid #e4e5e7;
+            margin: 15px 0;
+        }
+
+        /* 话题信息样式 */
+        .topic-info p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .topic-info span:first-child {
+            min-width: 120px;
+            color: #666;
+        }
+    </style>
+
+    <style>
+
+    /* 页面标题区域 */
+    .page-heading {
+        background-color: #c8e2ff !important; /* 森林绿 */
+        color: white !important;
+        border-radius: 8px 8px 0 0;
+        margin: 15px 15px 0 15px;
+        padding: 15px 20px;
+        box-shadow: 0 2px 5px rgb(184, 219, 255);
+    }
+
+    .page-heading h2 {
+        color: white !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+    <style>
+    /* 卡片和面板的绿色系样式 */
+    .panel-default {
+        border: 1px solid #d5e8d9;
+        box-shadow: 0 2px 10px rgba(46, 139, 87, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .panel-default:hover {
+        box-shadow: 0 5px 15px rgb(184, 219, 255);
+        transform: translateY(-2px);
+    }
+
+    .panel-heading {
+        background: linear-gradient(to right, #d1e8ff, #caffe2) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+    .panel-title {
+        color: white !important;
+    }
+
+    /* 选项卡激活状态 */
+    .nav-tabs > li.active > a,
+    .nav-tabs > li.active > a:hover,
+    .nav-tabs > li.active > a:focus {
+        color: #c8e2ff;
+        background-color: #f5faf7;
+        border-bottom: 3px solid #d7ffeb;
+    }
+
+
+
+    /* 增强DataTables样式 */
+    .dataTables_wrapper {
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .dataTables_filter input {
+        border: 1px solid #ddd !important;
+        border-radius: 20px !important;
+        padding: 6px 12px !important;
+        margin-bottom: 15px;
+    }
+
+    .dataTables_paginate .paginate_button {
+        border: 1px solid #ddd !important;
+        border-radius: 4px !important;
+        margin: 0 2px;
+        transition: all 0.3s;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+        background: #6B8DD6 !important;
+        color: white !important;
+    }
+
+    .dataTables_info {
+        color: #666 !important;
+        padding-top: 12px !important;
+    }
+
+</style>
+
+{% endblock %}
+{##}
+{% block content %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-4">
+            <h2>热搜话题追踪</h2>
+        </div>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h3>此热搜——数据趋势"</h3></div>
+                    <div class="panel-body">
+                        <div class="panel-head">
+                            <div class="panel-options">
+                                <ul class="nav nav-tabs">
+                                    <li><a data-toggle="tab" href="trace.html#t1">315晚会</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="trace.html#t2">哪吒2</a>
+                                    </li>
+                                    <li class=""><a data-toggle="tab" href="trace.html#t3">DeepSeek</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div id="t1" class="tab-pane active">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div>
+                                                <div>
+                                                    <div style="width:100%;">
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <h1 class="panel-title">
+                                                                    <img src='../static/img_new/title2.png'
+                                                                         style="width:40px;height:40px">
+                                                                    <span style="font-size:22px">&nbsp&nbsp&nbsp#315晚会#</span>
+{#                                                                    <span style="font-size:22px;float:right;margin-top:8px;">话题热度：&nbsp&nbsp&nbsp</span>#}
+                                                                </h1>
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp分类&nbsp:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">财经 </span>
+                                                                </p>
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp导语&nbsp:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">3月15日20点，中央广播电视总台“3·15”晚会在央视财经频道现场直播。</span>
+                                                                </p>
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp&nbsp主持人:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">央视财经 </span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    <img src='../static/img_new/statis2.jpg'
+                                                                         style="width:40px;height:40px">
+                                                                    <span style="font-size:22px"> &nbsp&nbsp&nbsp数据总览</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <div class="data-row">
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;">97.9亿</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp&nbsp阅读数量</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;"> 272.6万</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp&nbsp讨论数量</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;">  33.5万</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp原创人数</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- 热搜记录表优化版本 -->
+                                                        <div class="panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <h3 class="panel-title">
+                                                                <img src='../static/img_new/record.jpg' style="width:40px;height:40px">
+                                                                <span style="font-size:22px"> &nbsp&nbsp&nbsp热搜记录</span>
+                                                            </h3>
+                                                        </div>
+                                                            <div class="panel-body">
+                                                                <div class="row">
+                                                                    <div class="col-lg-6">
+                                                                        <div class="hot-search-record">
+                                                                            <div class="record-item">
+                                                                                <div class="record-label">热搜榜最高位置</div>
+                                                                                <div class="record-value">第 1 位</div>
+                                                                            </div>
+                                                                            <div class="record-item">
+                                                                                <div class="record-label">在榜时长</div>
+                                                                                <div class="record-value">24 小时 36 分钟</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-6">
+                                                                        <div class="record-rules">
+                                                                            <h4><i class="fa fa-info-circle"></i> 热搜规则</h4>
+                                                                            <p>热搜榜根据话题实时热度自动排序，热度值基于阅读量、讨论量、原创人数等多维度数据综合计算得出。</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading"><h3>"数据趋势"</h3></div>
+                                                            <div class="panel-body">
+                                                                <div id="两会main1"
+                                                                     style="width:100%;height: 400px"></div>
+                                                                <div id="两会main2"
+                                                                     style="width:100%;height: 400px"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="t2" class="tab-pane ">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div>
+                                                <div>
+                                                    <div style="width:100%;">
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <h1 class="panel-title">
+                                                                    <img src='../static/img_new/title2.png'
+                                                                         style="width:40px;height:40px">
+                                                                    <span style="font-size:22px">&nbsp&nbsp&nbsp#哪吒2#</span>
+{#                                                                    <span style="font-size:22px;float:right;margin-top:8px;">话题热度：8.8&nbsp&nbsp&nbsp</span>#}
+                                                                </h1>
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp分类&nbsp:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">电影 </span>
+                                                                </p>
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp导语&nbsp:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">无</span>
+                                                                </p>
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp&nbsp主持人:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">暂无 </span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    <img src='../static/img_new/statis2.jpg'
+                                                                         style="width:40px;height:40px">
+                                                                    <span style="font-size:22px"> &nbsp&nbsp&nbsp话题总览</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <div class="data-row">
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;">8亿</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp&nbsp阅读数量</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;"> 230.6万</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp&nbsp讨论数量</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;">  9.3万</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp原创人数</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- 热搜记录表优化版本 -->
+                                                        <div class="panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <h3 class="panel-title">
+                                                                <img src='../static/img_new/record.jpg' style="width:40px;height:40px">
+                                                                <span style="font-size:22px"> &nbsp&nbsp&nbsp热搜记录</span>
+                                                            </h3>
+                                                        </div>
+                                                            <div class="panel-body">
+                                                                <div class="row">
+                                                                    <div class="col-lg-6">
+                                                                        <div class="hot-search-record">
+                                                                            <div class="record-item">
+                                                                                <div class="record-label">热搜榜最高位置</div>
+                                                                                <div class="record-value">第 2 位</div>
+                                                                            </div>
+                                                                            <div class="record-item">
+                                                                                <div class="record-label">在榜时长</div>
+                                                                                <div class="record-value">2小时21分钟</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-6">
+                                                                        <div class="record-rules">
+                                                                            <h4><i class="fa fa-info-circle"></i> 热搜规则</h4>
+                                                                            <p>热搜榜根据话题实时热度自动排序，热度值基于阅读量、讨论量、原创人数等多维度数据综合计算得出。</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">数据趋势</div>
+                                                            <div class="panel-body">
+                                                                <div id="哪吒main1"
+                                                                     style="width:1100px;height: 400px">
+                                                                    <script type="text/javascript"
+                                                                            src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+                                                                    <script type="text/javascript">
+                                                                        var dom = document.getElementById('哪吒main1');
+                                                                        var myChart = echarts.init(dom, null, {
+                                                                            renderer: 'canvas',
+                                                                            useDirtyRect: false
+                                                                        });
+                                                                        var app = {};
+
+                                                                        var option;
+
+                                                                        option = {
+                                                                            title: {
+                                                                                text: '阅读趋势',
+                                                                                {#subtext: 'Fake Data'#}
+                                                                            },
+                                                                            tooltip: {
+                                                                                trigger: 'axis',
+                                                                                axisPointer: {
+                                                                                    type: 'cross'
+                                                                                }
+                                                                            },
+                                                                            toolbox: {
+                                                                                show: true,
+                                                                                feature: {
+                                                                                    saveAsImage: {}
+                                                                                }
+                                                                            },
+                                                                            xAxis: {
+                                                                                type: 'category',
+                                                                                boundaryGap: false,
+                                                                                // prettier-ignore
+                                                                                data: ['16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00','12:00','13:00','14:00','15:00']
+                                                                            },
+                                                                            yAxis: {
+                                                                                type: 'value',
+                                                                                axisLabel: {
+                                                                                    formatter: '{value}'
+                                                                                },
+                                                                                axisPointer: {
+                                                                                    snap: true
+                                                                                }
+                                                                            },
+                                                                            visualMap: {
+                                                                                show: false,
+                                                                                dimension: 0,
+                                                                                pieces: [
+                                                                                    {
+                                                                                        lte: 6,
+                                                                                        color: 'LightSkyBlue'
+                                                                                    },
+                                                                                    {
+                                                                                        gt: 6,
+                                                                                        lte: 8,
+                                                                                        color: '	LightCoral'
+                                                                                    },
+                                                                                    {
+                                                                                        gt: 8,
+                                                                                        lte: 14,
+                                                                                        color: 'LightSkyBlue'
+                                                                                    },
+                                                                                    {
+                                                                                        gt: 14,
+                                                                                        lte: 17,
+                                                                                        color: '	LightCoral'
+                                                                                    },
+                                                                                    {
+                                                                                        gt: 17,
+                                                                                        color: 'LightSkyBlue'
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            series: [
+                                                                                {
+                                                                                    name: 'Electricity',
+                                                                                    type: 'line',
+                                                                                    smooth: true,
+                                                                                    // prettier-ignore
+                                                                                    data: [22516, 20930, 21146, 19450, 22146, 97200, 63788, 32844, 19878, 12168, 7442, 5636, 4524, 5164, 7888, 13700, 16818, 17812, 18368, 17986,20396,23992,36272,20486],
+                                                                                    markArea: {
+                                                                                        itemStyle: {
+                                                                                            color: 'rgba(255, 173, 177, 0.4)'
+                                                                                        },
+                                                                                        data: [
+                                                                                            [
+                                                                                                {
+                                                                                                    name: 'Morning Peak',
+                                                                                                    xAxis: '20:00'
+                                                                                                },
+                                                                                                {
+                                                                                                    xAxis: '00:00'
+                                                                                                }
+                                                                                            ],
+                                                                                            [
+                                                                                                {
+                                                                                                    name: 'Evening Peak',
+                                                                                                    xAxis: '13:00'
+                                                                                                },
+                                                                                                {
+                                                                                                    xAxis: '15:00'
+                                                                                                }
+                                                                                            ]
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        };
+                                                                        option && myChart.setOption(option);
+
+                                                                        if (option && typeof option === 'object') {
+                                                                            myChart.setOption(option);
+                                                                        }
+
+                                                                        window.addEventListener('resize', myChart.resize);
+                                                                    </script>
+                                                                </div>
+                                                                <div id="哪吒main2"
+                                                                     style="width:1100px;height: 400px"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="t3" class="tab-pane ">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div>
+                                                <div>
+                                                    <div style="width:100%;">
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <h1 class="panel-title">
+                                                                    <img src='../static/img_new/title2.png'
+                                                                         style="width:40px;height:40px">
+                                                                    <span style="font-size:22px">&nbsp&nbsp&nbsp#DeepSeek#</span>
+{#                                                                    <span style="font-size:22px;float:right;margin-top:8px;">话题热度：9.0&nbsp&nbsp&nbsp</span>#}
+                                                                </h1>
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp分类&nbsp:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">科技</span>
+                                                                </p>
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp导语&nbsp:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">无</span>
+                                                                </p>
+                                                                <hr>
+                                                                <p>
+                                                                    <span style="font-size:20px;color:#939393">·&nbsp&nbsp主持人:&nbsp&nbsp&nbsp</span>
+                                                                    <span style="font-size:18px">暂无 </span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <h3 class="panel-title">
+                                                                    <img src='../static/img_new/statis2.jpg'
+                                                                         style="width:40px;height:40px">
+                                                                    <span style="font-size:22px"> &nbsp&nbsp&nbsp话题总览</span>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <div class="data-row">
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;">11.8亿</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp&nbsp阅读数量</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;"> 191.7万</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp&nbsp讨论数量</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-4">
+                                                                        <div class="num">
+                                                                        <span class="scale">
+                                                                            <p style="font-size:23px;text-align: center;">  13.2万</p>
+                                                                           <p style="font-size:15px;color:#939393;text-align: center;">&nbsp原创人数</p>
+                                                                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- 热搜记录表优化版本 -->
+                                                        <div class="panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <h3 class="panel-title">
+                                                                <img src='../static/img_new/record.jpg' style="width:40px;height:40px">
+                                                                <span style="font-size:22px"> &nbsp&nbsp&nbsp热搜记录</span>
+                                                            </h3>
+                                                        </div>
+                                                            <div class="panel-body">
+                                                                <div class="row">
+                                                                    <div class="col-lg-6">
+                                                                        <div class="hot-search-record">
+                                                                            <div class="record-item">
+                                                                                <div class="record-label">热搜榜最高位置</div>
+                                                                                <div class="record-value">第 27 位</div>
+                                                                            </div>
+                                                                            <div class="record-item">
+                                                                                <div class="record-label">在榜时长</div>
+                                                                                <div class="record-value">25 分钟</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-6">
+                                                                        <div class="record-rules">
+                                                                            <h4><i class="fa fa-info-circle"></i> 热搜规则</h4>
+                                                                            <p>热搜榜根据话题实时热度自动排序，热度值基于阅读量、讨论量、原创人数等多维度数据综合计算得出。</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">数据趋势</div>
+                                                            <div class="panel-body">
+                                                                <div id="二十大main1"
+                                                                     style="width:1100px;height: 400px"></div>
+                                                                <div id="二十大main2"
+                                                                     style="width:1100px;height: 400px"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">各类型热搜——情感分析</div>
+                <div class="panel-body">
+                    <div class="panel-head">
+                        <div class="panel-options">
+                            <ul class="nav nav-tabs">
+                                <li><a data-toggle="tab" href="trace.html#tab-11">315晚会</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#tab-12">哪吒2</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#tab-13">DeepSeek</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <div id="tab-11" class="tab-pane active">
+                                <table class="table enhanced-table dataTables-example">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 作者及评论详情</th>
+                                        <th style="width:15%">📅 发布时间</th>
+                                        <th style="width:20%">💖 情感分析</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for obj in data_list_1 %}
+                                        <tr>
+                                            <td>
+                                                <div class="author-info">
+                                                    <span style="font-size:16px;color:#2c3e50;">{{ obj.author }}</span>
+                                                </div>
+                                                <div style="font-size:14px;color:#4a4a4a;margin:10px 0">
+                                                    {{ obj.content }}
+                                                </div>
+                                                <div class="interaction-stats comment-meta">
+                                                    <span class="stat-item">🔄 {{ obj.share_num }}</span>
+                                                    <span class="stat-item">💬 {{ obj.comment_num }}</span>
+                                                    <span class="stat-item">❤️ {{ obj.like_num }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="comment-meta">
+                                                {{ obj.time }}
+                                            </td>
+                                            <td class="sentiment-cell">
+                                                <div style="position:relative;padding-right:30px">
+                                                    <div style="font-size:16px;font-weight:500;color:
+                                                            {% if obj.key_s == '积极' %}#2E8B57
+                                                            {% elif obj.key_s == '中性' %}#FFA500
+                                                            {% else %}#FF6B6B
+                                                            {% endif %}">
+                                                        {{ obj.key_s }}
+                                                        <span style="position:absolute;right:0;top:50%;transform:translateY(-50%)">
+                                                              {% if obj.key_s == '积极' %}✅
+                                                              {% elif obj.key_s == '中性' %}🟡
+                                                              {% else %}❌{% endif %}
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-size:12px;color:#95a5a6;margin-top:5px">
+                                                        {% if obj.key_s == '积极' %}正面评价占优
+                                                        {% elif obj.key_s == '中性' %}观点较为中立
+                                                        {% else %}存在负面倾向{% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="tab-12" class="tab-pane">
+                                <table class="table enhanced-table dataTables-example">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 作者及评论详情</th>
+                                        <th style="width:15%">📅 发布时间</th>
+                                        <th style="width:20%">💖 情感分析</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for obj in data_list_2 %}
+                                        <tr>
+                                            <td>
+                                                <div class="author-info">
+                                                    <span style="font-size:16px;color:#2c3e50;">{{ obj.author }}</span>
+                                                </div>
+                                                <div style="font-size:14px;color:#4a4a4a;margin:10px 0">
+                                                    {{ obj.content }}
+                                                </div>
+                                                <div class="interaction-stats comment-meta">
+                                                    <span class="stat-item">🔄 {{ obj.share_num }}</span>
+                                                    <span class="stat-item">💬 {{ obj.comment_num }}</span>
+                                                    <span class="stat-item">❤️ {{ obj.like_num }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="comment-meta">
+                                                {{ obj.time }}
+                                            </td>
+                                            <td class="sentiment-cell">
+                                                <div style="position:relative;padding-right:30px">
+                                                    <div style="font-size:16px;font-weight:500;color:
+                                                            {% if obj.key_s == '积极' %}#2E8B57
+                                                            {% elif obj.key_s == '中性' %}#FFA500
+                                                            {% else %}#FF6B6B
+                                                            {% endif %}">
+                                                        {{ obj.key_s }}
+                                                        <span style="position:absolute;right:0;top:50%;transform:translateY(-50%)">
+                                                              {% if obj.key_s == '积极' %}✅
+                                                              {% elif obj.key_s == '中性' %}🟡
+                                                              {% else %}❌{% endif %}
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-size:12px;color:#95a5a6;margin-top:5px">
+                                                        {% if obj.key_s == '积极' %}正面评价占优
+                                                        {% elif obj.key_s == '中性' %}观点较为中立
+                                                        {% else %}存在负面倾向{% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="tab-13" class="tab-pane">
+                               <table class="table enhanced-table dataTables-example">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 作者及评论详情</th>
+                                        <th style="width:15%">📅 发布时间</th>
+                                        <th style="width:20%">💖 情感分析</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for obj in data_list_3 %}
+                                        <tr>
+                                            <td>
+                                                <div class="author-info">
+                                                    <span style="font-size:16px;color:#2c3e50;">{{ obj.author }}</span>
+                                                </div>
+                                                <div style="font-size:14px;color:#4a4a4a;margin:10px 0">
+                                                    {{ obj.content }}
+                                                </div>
+                                                <div class="interaction-stats comment-meta">
+                                                    <span class="stat-item">🔄 {{ obj.share_num }}</span>
+                                                    <span class="stat-item">💬 {{ obj.comment_num }}</span>
+                                                    <span class="stat-item">❤️ {{ obj.like_num }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="comment-meta">
+                                                {{ obj.time }}
+                                            </td>
+                                            <td class="sentiment-cell">
+                                                <div style="position:relative;padding-right:30px">
+                                                    <div style="font-size:16px;font-weight:500;color:
+                                                            {% if obj.key_s == '积极' %}#2E8B57
+                                                            {% elif obj.key_s == '中性' %}#FFA500
+                                                            {% else %}#FF6B6B
+                                                            {% endif %}">
+                                                        {{ obj.key_s }}
+                                                        <span style="position:absolute;right:0;top:50%;transform:translateY(-50%)">
+                                                              {% if obj.key_s == '积极' %}✅
+                                                              {% elif obj.key_s == '中性' %}🟡
+                                                              {% else %}❌{% endif %}
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-size:12px;color:#95a5a6;margin-top:5px">
+                                                        {% if obj.key_s == '积极' %}正面评价占优
+                                                        {% elif obj.key_s == '中性' %}观点较为中立
+                                                        {% else %}存在负面倾向{% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+$(document).ready(function() {
+    $('.enhanced-table').DataTable({
+        "pagingType": "full_numbers",
+        "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        "language": {
+            "search": "快速筛选:",
+            "paginate": {
+                "first":      "首页",
+                "last":       "末页",
+                "next":       "下一页",
+                "previous":   "上一页"
+            },
+            "info":           "显示 _START_ 到 _END_ 共 _TOTAL_ 条",
+            "infoEmpty":      "显示 0 到 0 共 0 条",
+            "infoFiltered":   "(从 _MAX_ 条中筛选)"
+        },
+        "dom": '<"top"lf>rt<"bottom"ip><"clear">'
+    });
+});
+</script>
+
+
+    <div class="row">
+        <div class="col-lg-12"></div>
+        <div class="footer">
+            <div>
+                <strong>面向微博超话的情感检测系统</strong>
+                <!--——————————————————————    最底下的那一行字——————————————————————————    -->
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block js %}
+
+{#    <script src="../static/js/echarts-wordcloud.js"></script>#}
+    <!-- Mainly scripts -->
+    <script src="../static/js/jquery-2.1.1.min.js"></script>
+    <script src="../static/js/bootstrap.min.js?v=3.4.0"></script>
+{#    <script src="../static/js/plugins/metisMenu/jquery.metisMenu.js"></script>#}
+{#    <script src="../static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>#}
+
+{#    <script src="../static/js/plugins/jeditable/jquery.jeditable.js"></script>#}
+{##}
+{#    <!-- Data Tables -->#}
+{#    <script src="../static/js/plugins/dataTables/jquery.dataTables.js"></script>#}
+{#    <script src="../static/js/plugins/dataTables/dataTables.bootstrap.js"></script>#}
+
+{#    <!-- Custom and plugin javascript -->#}
+{#    <script src="../static/js/hplus.js?v=2.2.0"></script>#}
+{#    <script src="../static/js/plugins/pace/pace.min.js"></script>#}
+
+    <!-- Page-Level Scripts -->
+    <script type="text/javascript">
+
+        {#<!---------------------------------------------------------两会图1-------------------------------------------------->#}
+        var chartDom = document.getElementById('两会main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '阅读趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00','13:00','14:00','15:00','16:00']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [1634,1364,1308,1356,1532,1836,1882,1480,1300,858,558,400,478,586,828,1026,1154,1218,1224,1354,1316,1474,1582,474],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------两会图2-------------------------------------------------->
+        var chartDom = document.getElementById('两会main2');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '讨论趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00','13:00','14:00','15:00','16:00']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [75,49,51,37,79,81,80,122,93,14,2,2,2,0,4,1,29,7,1,5,36,55,54,2],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------土耳其图1-------------------------------------------------->
+
+        <!---------------------------------------------------------土耳其图2-------------------------------------------------->
+        var chartDom = document.getElementById('哪吒main2');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '讨论趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00','12:00','13:00','14:00','15:00','16:00']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [264,387,371,399,444,537,543,591,662,137,792,1165,1067,847,833,406,37,18,17,15,75,36,37,18],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------二十大图1-------------------------------------------------->
+        var chartDom = document.getElementById('二十大main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '阅读趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00','12:00','13:00','14:00','15:00','16:00']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [77800,62346,61040,65658,65142,66228,52428,43418,26956,18478,14316,13322,12710,20230,33828,45944,48204,46422,45000,45836,42896,36448,34020,22836],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------二十大图2-------------------------------------------------->
+        var chartDom = document.getElementById('二十大main2');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '讨论趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00','12:00','13:00','14:00','15:00','16:00']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [684,530,562,652,598,639,380,251,75,30,33,32,19,56,134,186,333,290,375,461,309,322,544,295],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+    </script>
+    {#------------------------------------main1,main2原来的图，与置顶话题热度对比，---该话题信息以及趋势展示------------------------------------------------------------------#}
+    <script>
+        $(document).ready(function () {
+            $('.dataTables-example').dataTable();
+
+            /* Init DataTables */
+            var oTable = $('#editable').dataTable();
+
+            /* Apply the jEditable handlers to the table */
+            oTable.$('td').editable('../example_ajax.php', {
+                "callback": function (sValue, y) {
+                    var aPos = oTable.fnGetPosition(this);
+                    oTable.fnUpdate(sValue, aPos[0], aPos[1]);
+                },
+                "submitdata": function (value, settings) {
+                    return {
+                        "row_id": this.parentNode.getAttribute('id'),
+                        "column": oTable.fnGetPosition(this)[2]
+                    };
+                },
+
+                "width": "90%",
+                "height": "100%"
+            });
+
+
+        });
+
+        function fnClickAddRow() {
+            $('#editable').dataTable().fnAddData([
+                "Custom row",
+                "New row",
+                "New row",
+                "New row",
+                "New row"]);
+
+        }
+    </script>
+
+
+    <script>
+        var chartDom = document.getElementById('main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            title: {
+                text: ''
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['两会', '土耳其', '二十大']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '两会',
+                    type: 'line',
+                    stack: 'Total',
+                    data: [1235, 3132, 3234, 3134, 2190, 2230, 2910]
+                },
+                {
+                    name: '土耳其',
+                    type: 'line',
+                    stack: 'Total',
+                    data: [2220, 2102, 2191, 2934, 2290, 2130, 2310]
+                },
+                {
+                    name: '二十大',
+                    type: 'line',
+                    stack: 'Total',
+                    data: [1150, 1232, 2201, 2154, 3190, 3330, 2410]
+                }
+            ]
+        };
+
+        option && myChart.setOption(option);    </script>
+    {#-------------------------------三个话题的饼图和折线图-------------------------------------------------------#}
+
+    <script>
+        $(document).ready(function () {
+            <!-- Enable portlets -->
+            WinMove();
+        });
+    </script>
+
+{% endblock %}

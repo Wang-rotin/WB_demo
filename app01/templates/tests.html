@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+import * as echarts from 'echarts';
+
+var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+
+// 完整对齐的数据
+const xData = [
+  '00:00', '01:00', '02:00', '03:00', '04:00', '05:00',
+  '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+  '12:00', '13:00', '14:00', '16:00', '17:00', '18:00',
+  '19:00', '20:00', '21:00', '22:00', '23:00' // 23个时间点
+];
+
+const yData = [
+  914, 593, 338, 232, 109, 139, 307, 531, 757, 898, 986,
+  995, 989, 1038, 1039, 1096, 919, 1067, 1190, 1232, 1384, 1326, 1223 // 23个数据点
+];
+
+const option = {
+  tooltip: {
+    trigger: 'item',
+    formatter: (params) => {
+      return `时间：${params.name}<br/>数值：${params.value}`;
+    }
+  },
+  xAxis: {
+    type: 'category',
+    data: xData,
+    axisLabel: {
+      rotate: 45 // X轴标签旋转45度防止重叠
+    }
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: {
+      formatter: '{value}'
+    }
+  },
+  series: [{
+    type: 'line',
+    smooth: true,
+    data: yData,
+    symbol: 'circle',
+    symbolSize: 12,
+    itemStyle: {
+      color: '#1890FF',      // 主色调改为蓝色
+      borderWidth: 2
+    },
+    lineStyle: {
+      width: 3,              // 加粗线条
+      shadowColor: 'rgba(0, 0, 0, 0.2)', // 添加阴影
+      shadowBlur: 10,
+      shadowOffsetY: 5
+    },
+    emphasis: {
+      itemStyle: {
+        color: '#FF6B81',    // 高亮颜色改为粉色
+        borderColor: '#fff',
+        borderWidth: 3
+      }
+    }
+  }],
+  grid: {  // 调整图表边距
+    left: '3%',
+    right: '4%',
+    bottom: '15%',
+    containLabel: true
+  }
+};
+
+// 增强版点击事件（带防抖）
+let timer = null;
+myChart.on('click', (params) => {
+  if (params.componentType === 'series') {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      const index = params.dataIndex;
+      const time = xData[index];
+      const value = yData[index];
+
+      // 自定义提示框
+      const tooltip = document.createElement('div');
+      tooltip.style.cssText = `
+        position: fixed;
+        padding: 8px 16px;
+        background: #fff;
+        border: 1px solid #ebedf0;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 9999;
+        font-family: Arial;
+        font-size: 14px;
+        transform: translate(-50%, -120%);
+      `;
+      tooltip.innerHTML = `
+        <div style="color: #333; font-weight: bold;">📊 数据详情</div>
+        <div style="margin-top: 8px;">
+          <span style="color: #666;">时间：</span>${time}<br/>
+          <span style="color: #666;">数值：</span>${value}
+        </div>
+      `;
+
+      // 定位计算
+      const [x, y] = [params.event.offsetX, params.event.offsetY];
+      tooltip.style.left = `${x}px`;
+      tooltip.style.top = `${y}px`;
+
+      document.body.appendChild(tooltip);
+      setTimeout(() => tooltip.remove(), 2000);
+    }, 50);
+  }
+});
+
+option && myChart.setOption(option);
+</script>
+</body>
+
+</html>

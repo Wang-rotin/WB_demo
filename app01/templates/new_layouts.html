@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>微博热点话题追踪</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description"
+          content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link href="../static/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="../static/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <!-- Morris -->
+    <link href="../static/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+
+    <!-- Gritter -->
+    <link href="../static/js/plugins/gritter/jquery.gritter.css" rel="stylesheet">
+
+    <link href="../static/css/animate.css" rel="stylesheet">
+    <link href="../static/css/style.css?v=2.2.0" rel="stylesheet">
+
+</head>
+
+<body>
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header">
+
+                    <div class="dropdown profile-element">
+                        <span>
+                         <img alt="头像" class="img-circle img-responsive" src="../static/img/touxiang.png"
+                          style="max-width: 50px; margin: 0 auto; display: block;"/>
+                             </span>
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                 <span class="clear"> <span class="block m-t-xs"
+                                        <strong class="font-bold"  style="text-align: center">王荣庭</strong>
+                                 </span>
+                                <span class="text-muted text-xs block" style="text-align: center">软件234<b
+                                            class="caret"></b>
+                                </span>
+                                </span>
+                            </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a href="#">个人资料</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="/login/">安全退出</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        wb
+                    </div>
+                </li>
+                <li class="">
+                    <a href="/index_2/"><i class="fa fa-th-large"></i><span class="nav-label">系统首页</span></a>
+
+                <li class="">
+                    <a href="/task_list/"><i class="fa fa-themeisle"></i><span class="nav-label">任务控制</span></a>
+
+                <li>
+                    <a href=""><i class="fa fa-files-o"></i> <span class="nav-label">情感分析</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li><a href="/analyse/">总览——整体通览</a>
+                        </li>
+                        <li><a href="/analyse_2/">细分——分类分析</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href=""><i class="fa fa-thermometer-empty"></i> <span
+                            class="nav-label">超话追踪</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        </li>
+                        <li><a href="/trace/">追踪——超话信息</a>
+                        </li>
+                        <li><a href="/trace_2/">追踪——超话趋势</a>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i
+                            class="fa fa-bars"></i></a>
+                </div>
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                        <span class="m-r-sm text-muted welcome-message"><a href="/index_2/" title="返回首页"><i
+                                class="fa fa-home"></i></a>欢迎使用基于大语言模型的微博热点舆情分析系统</span>
+                    </li>
+                    <li>
+                        <a href="/login/">
+                            <i class="fa fa-sign-out"></i> 退出
+                            <!--  ——————————————————————标题导航栏———————————————————————————————————————————— -->
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div>
+            {% block content %}{% endblock %}
+            <div class="row">
+                <div class="col-lg-12"></div>
+                <div class="footer">
+                    <div>
+                        <strong>基于大语言模型的微博热点舆情分析系统</strong>
+                        <!--——————————————————————    最底下的那一行字   ——————————————————————————    -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mainly scripts -->
+<script src="../static/js/jquery-2.1.1.min.js"></script>
+<script src="../static/js/bootstrap.min.js?v=3.4.0"></script>
+<script src="../static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="../static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Flot -->
+<script src="../static/js/plugins/flot/jquery.flot.js"></script>
+<script src="../static/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script src="../static/js/plugins/flot/jquery.flot.spline.js"></script>
+<script src="../static/js/plugins/flot/jquery.flot.resize.js"></script>
+<script src="../static/js/plugins/flot/jquery.flot.pie.js"></script>
+<script src="../static/js/plugins/flot/jquery.flot.symbol.js"></script>
+
+<!-- Peity -->
+<script src="../static/js/plugins/peity/jquery.peity.min.js"></script>
+<script src="../static/js/demo/peity-demo.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="../static/js/hplus.js?v=2.2.0"></script>
+<script src="../static/js/plugins/pace/pace.min.js"></script>
+
+<!-- jQuery UI -->
+<script src="../static/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+<!-- Jvectormap -->
+<script src="../static/js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+<script src="../static/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+
+<!-- EayPIE -->
+<script src="../static/js/plugins/easypiechart/jquery.easypiechart.js"></script>
+
+<!-- Sparkline -->
+<script src="../static/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<!-- Sparkline demo data  -->
+<script src="../static/js/demo/sparkline-demo.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.chart').easyPieChart({
+            barColor: '#f8ac59',
+            //                scaleColor: false,
+            scaleLength: 5,
+            lineWidth: 4,
+            size: 80
+        });
+
+        $('.chart2').easyPieChart({
+            barColor: '#1c84c6',
+            //                scaleColor: false,
+            scaleLength: 5,
+            lineWidth: 4,
+            size: 80
+        });
+
+        var data2 = [
+            [gd(2012, 1, 1), 7], [gd(2012, 1, 2), 6], [gd(2012, 1, 3), 4], [gd(2012, 1, 4), 8],
+            [gd(2012, 1, 5), 9], [gd(2012, 1, 6), 7], [gd(2012, 1, 7), 5], [gd(2012, 1, 8), 4],
+            [gd(2012, 1, 9), 7], [gd(2012, 1, 10), 8], [gd(2012, 1, 11), 9], [gd(2012, 1, 12), 6],
+            [gd(2012, 1, 13), 4], [gd(2012, 1, 14), 5], [gd(2012, 1, 15), 11], [gd(2012, 1, 16), 8],
+            [gd(2012, 1, 17), 8], [gd(2012, 1, 18), 11], [gd(2012, 1, 19), 11], [gd(2012, 1, 20), 6],
+            [gd(2012, 1, 21), 6], [gd(2012, 1, 22), 8], [gd(2012, 1, 23), 11], [gd(2012, 1, 24), 13],
+            [gd(2012, 1, 25), 7], [gd(2012, 1, 26), 9], [gd(2012, 1, 27), 9], [gd(2012, 1, 28), 8],
+            [gd(2012, 1, 29), 5], [gd(2012, 1, 30), 8], [gd(2012, 1, 31), 25]
+        ];
+
+        var data3 = [
+            [gd(2012, 1, 1), 800], [gd(2012, 1, 2), 500], [gd(2012, 1, 3), 600], [gd(2012, 1, 4), 700],
+            [gd(2012, 1, 5), 500], [gd(2012, 1, 6), 456], [gd(2012, 1, 7), 800], [gd(2012, 1, 8), 589],
+            [gd(2012, 1, 9), 467], [gd(2012, 1, 10), 876], [gd(2012, 1, 11), 689], [gd(2012, 1, 12), 700],
+            [gd(2012, 1, 13), 500], [gd(2012, 1, 14), 600], [gd(2012, 1, 15), 700], [gd(2012, 1, 16), 786],
+            [gd(2012, 1, 17), 345], [gd(2012, 1, 18), 888], [gd(2012, 1, 19), 888], [gd(2012, 1, 20), 888],
+            [gd(2012, 1, 21), 987], [gd(2012, 1, 22), 444], [gd(2012, 1, 23), 999], [gd(2012, 1, 24), 567],
+            [gd(2012, 1, 25), 786], [gd(2012, 1, 26), 666], [gd(2012, 1, 27), 888], [gd(2012, 1, 28), 900],
+            [gd(2012, 1, 29), 178], [gd(2012, 1, 30), 555], [gd(2012, 1, 31), 993]
+        ];
+
+
+        var dataset = [
+            {
+                label: "订单数",
+                data: data3,
+                color: "#1ab394",
+                bars: {
+                    show: true,
+                    align: "center",
+                    barWidth: 24 * 60 * 60 * 600,
+                    lineWidth: 0
+                }
+
+            }, {
+                label: "付款数",
+                data: data2,
+                yaxis: 2,
+                color: "#464f88",
+                lines: {
+                    lineWidth: 1,
+                    show: true,
+                    fill: true,
+                    fillColor: {
+                        colors: [{
+                            opacity: 0.2
+                        }, {
+                            opacity: 0.2
+                        }]
+                    }
+                },
+                splines: {
+                    show: false,
+                    tension: 0.6,
+                    lineWidth: 1,
+                    fill: 0.1
+                },
+            }
+        ];
+
+
+        var options = {
+            xaxis: {
+                mode: "time",
+                tickSize: [3, "day"],
+                tickLength: 0,
+                axisLabel: "Date",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: 'Arial',
+                axisLabelPadding: 10,
+                color: "#838383"
+            },
+            yaxes: [{
+                position: "left",
+                max: 1070,
+                color: "#838383",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: 'Arial',
+                axisLabelPadding: 3
+            }, {
+                position: "right",
+                clolor: "#838383",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: ' Arial',
+                axisLabelPadding: 67
+            }
+            ],
+            legend: {
+                noColumns: 1,
+                labelBoxBorderColor: "#000000",
+                position: "nw"
+            },
+            grid: {
+                hoverable: false,
+                borderWidth: 0,
+                color: '#838383'
+            }
+        };
+
+        function gd(year, month, day) {
+            return new Date(year, month - 1, day).getTime();
+        }
+
+        var previousPoint = null,
+            previousLabel = null;
+
+        $.plot($("#flot-dashboard-chart"), dataset, options);
+
+        var mapData = {
+            "US": 298,
+            "SA": 200,
+            "DE": 220,
+            "FR": 540,
+            "CN": 120,
+            "AU": 760,
+            "BR": 550,
+            "IN": 200,
+            "GB": 120,
+        };
+
+        $('#world-map').vectorMap({
+            map: 'world_mill_en',
+            backgroundColor: "transparent",
+            regionStyle: {
+                initial: {
+                    fill: '#e4e4e4',
+                    "fill-opacity": 0.9,
+                    stroke: 'none',
+                    "stroke-width": 0,
+                    "stroke-opacity": 0
+                }
+            },
+
+            series: {
+                regions: [{
+                    values: mapData,
+                    scale: ["#1ab394", "#22d6b1"],
+                    normalizeFunction: 'polynomial'
+                }]
+            },
+        });
+    });
+</script>
+
+<!--<script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>&lt;!&ndash;统计代码，可删除&ndash;&gt;-->
+
+</body>
+
+</html>

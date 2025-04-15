@@ -1,0 +1,1397 @@
+{% extends "new_layout_2.html" %}
+{% load static %}
+{% block css %}
+    <style>
+    .three-color-table tbody tr:nth-child(3n+1) { background-color: #e6f7ff; }  /* 浅蓝色 */
+    .three-color-table tbody tr:nth-child(3n+2) { background-color: #f1ffec; }  /* 白色 */
+    .three-color-table tbody tr:nth-child(3n+3) { background-color: #ffebf5; }  /* 浅粉色 */
+
+        /* 自定义美化样式 */
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        .metric-header {
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: none;
+            padding: 15px 20px;
+        }
+        .metric-label {
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+        .metric-value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .metric-change {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .metric-change i {
+            font-size: 18px;
+        }
+    </style>
+    {#    <link href="../static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">#}
+    <link href="../static/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+    <link href="../static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{##}
+{% endblock %}
+
+{% block content %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-4">
+            <h2>系统首页</h2>
+        </div>
+    </div>
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>热点话题多信息展示——时间序列</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="graph_flot.html#">选项1</a>
+                    </li>
+                    <li><a href="graph_flot.html#">选项2</a>
+                    </li>
+                </ul>
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+        </div>
+        <div id="mainsandian" style="height: 400px;width: 100%;margin: 0"></div>
+
+
+        {#        <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>#}
+        <script type="text/javascript" src="../static/js/echarts.js"></script>
+
+        <script type="text/javascript">
+
+
+            var chartDom = document.getElementById('mainsandian');
+            var myChart = echarts.init(chartDom);
+            var option;
+
+
+            const schema = [
+                {name: 'date', index: 0, text: '日'},
+                {name: 'AQIindex', index: 1, text: '关注热量度'},
+                {name: 'PM25', index: 2, text: '今日阅读量'},
+                {name: 'PM10', index: 3, text: '今日讨论量'},
+                {name: 'CO', index: 4, text: '情感指数'}
+            ];
+
+            option = {
+                color: ['#dd4444', '#fec42c', '#80F1BE'],
+                legend: {
+                    top: 10,
+                    data: ['积极', '中性', '消极'],
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                grid: {
+                    left: '10%',
+                    right: 150,
+                    top: '18%',
+                    bottom: '10%'
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                    formatter: function (param) {
+                        var value = param.value;
+
+                        return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                            + value[0] + '日' + ' ' + param.seriesName + "："
+                            + value[5]
+                            + '</div>'
+                            + schema[1].text + '：' + value[1] + '万' + '<br>'
+                            + schema[2].text + '：' + value[2] + '万' + '<br>'
+                            + schema[3].text + '：' + value[3] + '万' + '<br>'
+                            + schema[4].text + '：' + value[4] + '<br>'
+                            ;
+                    }
+                },
+                xAxis: {
+                    type: 'value',
+                    name: '日期',
+                    nameGap: 16,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    max: 26,
+                    splitLine: {
+                        show: false
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '关注热量度',
+                    nameLocation: 'end',
+                    nameGap: 20,
+                    axisLabel: {
+                        formatter: '{value} 万'
+                    },
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    splitLine: {
+                        show: false
+                    }
+                },
+                visualMap: [
+                    {
+                        left: 'right',
+                        top: '10%',
+                        dimension: 2,
+                        min: 0,
+                        max: 150,
+                        itemWidth: 30,
+                        itemHeight: 120,
+                        calculable: true,
+                        precision: 0.1,
+                        text: ['圆形大小：阅读量(万)'],
+                        textGap: 30,
+                        inRange: {
+                            symbolSize: [10, 70]
+                        },
+                        outOfRange: {
+                            symbolSize: [10, 70],
+                            color: ['rgba(255,255,255,0.4)']
+                        },
+                        controller: {
+                            inRange: {
+                                color: ['#c23531']
+                            },
+                            outOfRange: {
+                                color: ['#999']
+                            }
+                        }
+                    },
+                    {
+                        left: 'right',
+                        bottom: '5%',
+                        dimension: 4,
+                        min: 0,
+                        max: 1,
+                        itemHeight: 120,
+                        text: ['明暗：情感指数'],
+                        textGap: 30,
+                        inRange: {
+                            colorLightness: [0.9, 0.5]
+                        },
+                        outOfRange: {
+                            color: ['rgba(255,255,255,0.4)']
+                        },
+                        controller: {
+                            inRange: {
+                                color: ['#c23531']
+                            },
+                            outOfRange: {
+                                color: ['#999']
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name:
+                            {
+                                normal: {
+                                    str: function (params) {
+                                        var strlist = ['积极', '消极', '中性'];
+                                        return strlist[params.data[7]];
+                                    }
+                                }
+                            },
+                        type: 'scatter',
+                        itemStyle: {
+                            opacity: 0.8,
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 0,
+                            shadowColor: 'rgba(0,0,0,0.3)',
+                            normal: {
+                                color: function (params) {
+                                    var colorList = ['#dd4444', '#fec42c', '#80F1BE'];
+                                    return colorList[params.data[7]];
+                                }
+                            },
+                        },
+                        data: [
+                            // 积极
+                            [
+                                1,
+                                100,
+                                80,
+                                56,
+                                0.8846,
+                                '偶遇赵露思谈工作',
+                                'https://s.weibo.com/weibo?q=%23%E5%81%B6%E9%81%87%E8%B5%B5%E9%9C%B2%E6%80%9D%E8%B0%88%E5%B7%A5%E4%BD%9C%23&t=31&band_rank=35&Refer=top',
+                                0
+                            ],
+                            [
+                                2,
+                                73,
+                                71,
+                                21,
+                                0.7532,
+                                '华人志愿者带药品卫生巾奔赴震区',
+                                'https://s.weibo.com/weibo?q=%23%E5%8D%8E%E4%BA%BA%E5%BF%97%E6%84%BF%E8%80%85%E5%B8%A6%E8%8D%AF%E5%93%81%E5%8D%AB%E7%94%9F%E5%B7%BE%E5%A5%94%E8%B5%B4%E9%9C%87%E5%8C%BA%23&t=31&band_rank=10&Refer=top',
+                                0
+                            ],
+                            [3, 67, 50, 63, 0.7727, '外资企业是中国式现代化的重要参与者', 'https://s.weibo.com/weibo?q=%23%E5%A4%96%E8%B5%84%E4%BC%81%E4%B8%9A%E6%98%AF%E4%B8%AD%E5%9B%BD%E5%BC%8F%E7%8E%B0%E4%BB%A3%E5%8C%96%E7%9A%84%E9%87%8D%E8%A6%81%E5%8F%82%E4%B8%8E%E8%80%85%23&Refer=new_time', 0],
+                            [4, 88, 73, 59, 0.8255, '杭州大伯被蛇咬用嘴吸毒液紧急入院', 'https://s.weibo.com/weibo?q=%23%E6%9D%AD%E5%B7%9E%E5%A4%A7%E4%BC%AF%E8%A2%AB%E8%9B%87%E5%92%AC%E7%94%A8%E5%98%B4%E5%90%B8%E6%AF%92%E6%B6%B2%E7%B4%A7%E6%80%A5%E5%85%A5%E9%99%A2%23&t=31&band_rank=18&Refer=top', 0],
+                            [
+                                5,
+                                72,
+                                54,
+                                44,
+                                0.7938,
+                                '泰国女子见到中国救援队后泪目'
+                                , 'https://s.weibo.com/weibo?q=%23%E6%B3%B0%E5%9B%BD%E5%A5%B3%E5%AD%90%E8%A7%81%E5%88%B0%E4%B8%AD%E5%9B%BD%E6%95%91%E6%8F%B4%E9%98%9F%E5%90%8E%E6%B3%AA%E7%9B%AE%23&t=31&band_rank=26&Refer=top',
+                                0
+                            ],
+                            [6, 62, 68, 90, 0.8909, '王宝强棋士信息量好大', 'https://s.weibo.com/weibo?q=%E7%8E%8B%E5%AE%9D%E5%BC%BA%E6%A3%8B%E5%A3%AB%E4%BF%A1%E6%81%AF%E9%87%8F%E5%A5%BD%E5%A4%A7&t=31&band_rank=39&Refer=top', 0],
+                            [
+                                7,
+                                54,
+                                69,
+                                77,
+                                0.7957,
+                                '缅甸一中企用汶川地震知识成功避险', 'https://s.weibo.com/weibo?q=%23%E7%BC%85%E7%94%B8%E4%B8%80%E4%B8%AD%E4%BC%81%E7%94%A8%E6%B1%B6%E5%B7%9D%E5%9C%B0%E9%9C%87%E7%9F%A5%E8%AF%86%E6%88%90%E5%8A%9F%E9%81%BF%E9%99%A9%23&t=31&band_rank=40&Refer=top', 0
+                            ],
+                            [8, 216, 106, 80, 0.8968, '金秀贤联系雪莉母亲', 'https://s.weibo.com/weibo?q=%23%E9%87%91%E7%A7%80%E8%B4%A4%E8%81%94%E7%B3%BB%E9%9B%AA%E8%8E%89%E6%AF%8D%E4%BA%B2%23&t=31&band_rank=42&Refer=top', 0],
+                            [9, 267, 216, 280, 0.8321, '陈哲远状态这么好奖励一部现偶', 'https://s.weibo.com/weibo?q=%E9%99%88%E5%93%B2%E8%BF%9C%E7%8A%B6%E6%80%81%E8%BF%99%E4%B9%88%E5%A5%BD%E5%A5%96%E5%8A%B1%E4%B8%80%E9%83%A8%E7%8E%B0%E5%81%B6&t=31&band_rank=34&Refer=top', 0],
+                            [10, 185, 127, 216, 0.52125, '新90四大一番花','https://s.weibo.com/weibo?q=%E8%8B%A6%E5%B0%BD%E6%9F%91%E6%9D%A5%E9%81%87%E8%A7%81%E4%BD%A0%20%E5%BC%A0%E5%AE%B6%E7%95%8C&t=31&band_rank=1&Refer=top', 0],
+                            [11, 39, 19, 38, 0.57107, '沈月是快大2第一期总导演', 'https://s.weibo.com/weibo?q=%23%E5%8F%8C%E8%83%9E%E8%83%8E%E5%BD%93%E4%BA%861%E5%B9%B4%E6%9C%8B%E5%8F%8B%E6%89%8D%E5%8F%91%E7%8E%B0%E6%98%AF%E4%BA%B2%E5%A7%90%E5%A6%B9%23&t=31&band_rank=12&Refer=top', 0],
+                            [12, 41, 11, 40, 0.43002, '优', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            [13, 64, 38, 74, 0.74524, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            [14, 108, 79, 120, 0.7103, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            [15, 108, 63, 116, 0.4802, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            // 消极
+                            [1, 36, 27, 27, 0.4632, '新秀王安冉离婚', 'https://s.weibo.com/weibo?q=%23%E5%A4%96%E8%B5%84%E4%BC%81%E4%B8%9A%E6%98%AF%E4%B8%AD%E5%9B%BD%E5%BC%8F%E7%8E%B0%E4%BB%A3%E5%8C%96%E7%9A%84%E9%87%8D%E8%A6%81%E5%8F%82%E4%B8%8E%E8%80%85%23&Refer=new_time', 1],
+                            [2, 30, 22, 71, 0.3951, '王宝宝出轨', 'https://s.weibo.com/weibo?q=%23%E6%97%A5%E6%9C%AC%E7%AC%AC11%E8%BD%AE%E6%A0%B8%E6%B1%A1%E6%9F%93%E6%B0%B4%E6%8E%92%E6%B5%B7%E7%BB%93%E6%9D%9F%23&t=31&band_rank=4&Refer=top', 1],
+                            [2, 277, 216, 364, 0.3632, '韩安冉回应与婆婆矛盾', 'https://s.weibo.com/weibo?q=%23%E5%8D%8E%E4%BA%BA%E5%BF%97%E6%84%BF%E8%80%85%E5%B8%A6%E8%8D%AF%E5%93%81%E5%8D%AB%E7%94%9F%E5%B7%BE%E5%A5%94%E8%B5%B4%E9%9C%87%E5%8C%BA%23&t=31&band_rank=10&Refer=top', 1],
+                            [3, 255, 207, 367, 0.4346, '陈哲远这次是wink不是weak', 'https://s.weibo.com/weibo?q=%233%E4%BD%8D%E8%87%AA%E6%9D%80%E5%A5%B3%E6%98%9F%E5%9D%87%E4%B8%8E%E9%87%91%E7%A7%80%E8%B4%A4%E5%85%AC%E5%8F%B8%E6%9C%89%E5%85%B3%E8%81%94%23&t=31&band_rank=24&Refer=top', 1],
+                            [4, 153, 97, 46, 0.3159, '王宝强新剧拿稳黑莲花剧本', 'https://s.weibo.com/weibo?q=%E9%99%88%E5%93%B2%E8%BF%9C%E7%8A%B6%E6%80%81%E8%BF%99%E4%B9%88%E5%A5%BD%E5%A5%96%E5%8A%B1%E4%B8%80%E9%83%A8%E7%8E%B0%E5%81%B6&t=31&band_rank=34&Refer=top', 1],
+                            [5, 52, 52, 46, 0.3150, '陈志朋把还珠格格播出时间写错了', 'https://s.weibo.com/weibo?q=%23%E5%81%B6%E9%81%87%E8%B5%B5%E9%9C%B2%E6%80%9D%E8%B0%88%E5%B7%A5%E4%BD%9C%23&t=31&band_rank=35&Refer=top', 1],
+                            [6, 26, 38, 69, 0.3671, '黄旭华92岁离休第二天又拄着拐出现', 'https://s.weibo.com/weibo?q=%23%E9%BB%84%E6%97%AD%E5%8D%8E92%E5%B2%81%E7%A6%BB%E4%BC%91%E7%AC%AC%E4%BA%8C%E5%A4%A9%E5%8F%88%E6%8B%84%E7%9D%80%E6%8B%90%E5%87%BA%E7%8E%B0%23&t=31&band_rank=2&Refer=top', 1],
+                            [8, 55, 48, 74, 0.3362, '你觉得工资越高越幸福吗', 'https://s.weibo.com/weibo?q=%23%E4%BD%A0%E8%A7%89%E5%BE%97%E5%B7%A5%E8%B5%84%E8%B6%8A%E9%AB%98%E8%B6%8A%E5%B9%B8%E7%A6%8F%E5%90%97%23', 1],
+                            [9, 76, 85, 113, 0.2373, '胃病转向胃癌有5个信号', 'https://s.weibo.com/weibo?q=%23%E8%83%83%E7%97%85%E8%BD%AC%E5%90%91%E8%83%83%E7%99%8C%E6%9C%895%E4%B8%AA%E4%BF%A1%E5%8F%B7%23', 1],
+                            [10, 91, 81, 104, 0.0414, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [11, 84, 39, 60, 0.9645, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [12, 64, 51, 101, 0.8626, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [13, 70, 69, 120, 0.198, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [14, 77, 105, 178, 0.549, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [15, 109, 68, 87, 0.996, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            //中性
+                            [1, 91, 55, 95, 0.62, '算法向上向善', 'https://s.weibo.com/weibo?q=%23%E7%AE%97%E6%B3%95%E5%90%91%E4%B8%8A%E5%90%91%E5%96%84%23&t=31&band_rank=3&Refer=top', 2],
+                            [2, 150, 97, 78, 0.66, '苦尽柑来遇见你 张家界', 'https://s.weibo.com/weibo?q=%E8%8B%A6%E5%B0%BD%E6%9F%91%E6%9D%A5%E9%81%87%E8%A7%81%E4%BD%A0%20%E5%BC%A0%E5%AE%B6%E7%95%8C&t=31&band_rank=1&Refer=top', 2],
+                            [3, 83, 60, 84, 0.69, '英雄之光', 'https://s.weibo.com/weibo?q=%23%E8%8B%B1%E9%9B%84%E4%B9%8B%E5%85%89%23', 2],
+                            [4, 109, 81, 121, 0.6832, '辣目洋子辣眼版还珠格格', 'https://s.weibo.com/weibo?q=%E8%BE%A3%E7%9B%AE%E6%B4%8B%E5%AD%90%E8%BE%A3%E7%9C%BC%E7%89%88%E8%BF%98%E7%8F%A0%E6%A0%BC%E6%A0%BC&t=31&band_rank=36&Refer=top', 2],
+                            [5, 36, 77, 34, 0.6713, '难怪吃菠萝嘴巴疼', 'https://s.weibo.com/weibo?q=%23%E9%9A%BE%E6%80%AA%E5%90%83%E8%8F%A0%E8%90%9D%E5%98%B4%E5%B7%B4%E7%96%BC%23', 2],
+                            [6, 49, 31, 71, 0.6873, '沈月这是能说的吗', 'https://s.weibo.com/weibo?q=%E5%BC%A0%E5%AE%B6%E7%95%8C%E8%90%BD%E5%8F%B6&t=31&band_rank=38&Refer=top', 2],
+                            [7, 86, 47, 84, 0.876653, '邓为不争先争的是滔滔不绝', 'https://s.weibo.com/weibo?q=%E7%8E%8B%E5%AE%9D%E5%BC%BA%E6%96%B0%E5%89%A7%E6%8B%BF%E7%A8%B3%E9%BB%91%E8%8E%B2%E8%8A%B1%E5%89%A7%E6%9C%AC&t=31&band_rank=47&Refer=top', 2],
+                            [8, 89, 65, 78, 0.5682, '实习成绩打高了毕不了业', 'https://s.weibo.com/weibo?q=iPhone%E6%88%AA%E5%9B%BE%E7%9A%84%E9%9A%90%E8%97%8F%E5%8A%9F%E8%83%BD&t=31&band_rank=17&Refer=top', 2],
+                            [9, 53, 33, 47, 0.6477, '专家辟谣缅甸地震将升级到9.8级', 'https://s.weibo.com/weibo?q=%233%E4%BD%8D%E8%87%AA%E6%9D%80%E5%A5%B3%E6%98%9F%E5%9D%87%E4%B8%8E%E9%87%91%E7%A7%80%E8%B4%A4%E5%85%AC%E5%8F%B8%E6%9C%89%E5%85%B3%E8%81%94%23&t=31&band_rank=24&Refer=top', 2],
+                            [10, 80, 55, 80, 0.01, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [11, 117, 81, 124, 0.03, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [12, 99, 71, 142, 0.1, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [13, 95, 69, 130, 0.28, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [14, 116, 87, 131, 0.47, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [15, 108, 80, 121, 0.3, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2]
+                        ]
+                    },
+                    <!--    {-->
+                    <!--         name: '中性',-->
+                    <!--         type: 'scatter',-->
+                    <!--         itemStyle: itemStyle,-->
+                    <!--         data: dataSH-->
+                    <!--    },-->
+                    <!--     {-->
+                    <!--         name: '消极',-->
+                    <!--         type: 'scatter',-->
+                    <!--         itemStyle: itemStyle,-->
+                    <!--         data: dataGZ-->
+                    <!--     }-->
+                ]
+            };
+
+            option && myChart.setOption(option);
+            myChart.on('click', function (params) {
+                if (params.seriesType == 'scatter') {
+                    var x = params.value[0];
+                    var y = params.value[1];
+                    var url = params.value[6];
+                    window.location.href = url;
+                }
+            });
+        </script>
+
+
+    </div>
+    {# 用户数据-散点图   #}
+    <div class="wrapper wrapper-content">
+    <div class="row">
+        {% for obj in huati_add_5 %}
+        <div class="col-lg-3 col-md-6 mb-4">
+            <!-- 积极指数 -->
+            <div class="metric-card">
+                <div class="metric-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-bold text-primary">积极指数</h5>
+                    <span class="metric-label">今日</span>
+                </div>
+                <div class="ibox-content p-4 text-center">
+                    <div class="metric-value text-success">0.786</div>
+                    <div class="metric-change text-success mt-3">
+                        <span>9%</span>
+                        <i class="fa fa-arrow-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <!-- 积极帖数 -->
+            <div class="metric-card">
+                <div class="metric-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-bold text-primary">积极帖数</h5>
+                    <span class="metric-label">今日</span>
+                </div>
+                <div class="ibox-content p-4 text-center">
+                    <div class="metric-value text-primary">{{ obj.jiji_add }}</div>
+                    <div class="metric-change text-danger mt-3">
+                        <span>10%</span>
+                        <i class="fa fa-arrow-down"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <!-- 消极帖数 -->
+            <div class="metric-card">
+                <div class="metric-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-bold text-primary">消极帖数</h5>
+                    <span class="metric-label">今日</span>
+                </div>
+                <div class="ibox-content p-4 text-center">
+                    <div class="metric-value text-danger">{{ obj.xiaoji_add }}</div>
+                    <div class="metric-change text-info mt-3">
+                        <span>15%</span>
+                        <i class="fa fa-arrow-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <!-- 追踪话题 -->
+            <div class="metric-card">
+                <div class="metric-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-bold text-primary">追踪话题</h5>
+                    <span class="metric-label">今日</span>
+                </div>
+                <div class="ibox-content p-4 text-center">
+                    <div class="metric-value text-info">3</div>
+                    <div class="metric-change text-info mt-3">
+                        <span>+1</span>
+                        <i class="fa fa-plus-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!------------------------------各类榜单---------------------------------------------->
+    {#话题分析数据#}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel blank-panel">
+                <div class="panel-options">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="index_2.html#tab-3-1"
+                                              aria-expanded="false">热搜榜</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="index_2.html#tab-3-2"
+                                        aria-expanded="true">文娱</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="index_2.html#tab-3-3"
+                                        aria-expanded="true">要闻</a>
+                        </li>
+                         <li class=""><a data-toggle="tab" href="index_2.html#tab-3-4"
+                                        aria-expanded="true">校园</a>
+                        </li>
+                         <li class=""><a data-toggle="tab" href="index_2.html#tab-3-5"
+                                        aria-expanded="true">体育</a>
+                        </li>
+                         <li class=""><a data-toggle="tab" href="index_2.html#tab-3-6"
+                                        aria-expanded="true">游戏</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {#-------------------------------------上方选项卡标题切换---------------------------------------------#}
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <strong>此话题——榜单</strong>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="trace.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="trace.html#">选项1</a>
+                            </li>
+                            <li><a href="trace.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <div id="tab-3-1" class="tab-pane active">
+                                <div class="item active">
+                                    {#                            #}
+                                    <div>
+                                       <table class="table table-bordered table-hover dataTables-example three-color-table">
+                                            <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for obj in data_list %}
+                                                <tr class="gradeX">
+                                                    <td>{{ obj.rank }}</td>
+                                                    <td>{{ obj.hot_title }}</td>
+                                                    <td>
+                                                        <a href="{{ obj.hot_href }}" target="_blank" rel="noopener noreferrer">
+                                                            {{ obj.hot_href|truncatechars:50 }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ obj.hot_num }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-2" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                         <table class="table table-bordered table-hover dataTables-example three-color-table">
+                                            <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for obj in wenyu_rank_list %}
+                                                <tr class="gradeX">
+                                                    <td>{{ obj.rank }}</td>
+                                                    <td>{{ obj.hot_title }}</td>
+                                                    <td>
+                                                        <a href="{{ obj.hot_href }}" target="_blank" rel="noopener noreferrer">
+                                                            {{ obj.hot_href|truncatechars:50 }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ obj.hot_num }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-3" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                      <table class="table table-bordered table-hover dataTables-example three-color-table">
+                                            <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for obj in yaowen_rank_list %}
+                                                <tr class="gradeX">
+                                                    <td>{{ obj.rank }}</td>
+                                                    <td>{{ obj.hot_title }}</td>
+                                                    <td>
+                                                        <a href="{{ obj.hot_href }}" target="_blank" rel="noopener noreferrer">
+                                                            {{ obj.hot_href|truncatechars:50 }}
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-4" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                        <table class="table table-bordered table-hover dataTables-example three-color-table">
+                                            <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for obj in xiaoyuan_rank_list %}
+                                                <tr class="gradeX">
+                                                    <td>{{ obj.rank }}</td>
+                                                    <td>{{ obj.hot_title }}</td>
+                                                    <td>
+                                                        <a href="{{ obj.hot_href }}" target="_blank" rel="noopener noreferrer">
+                                                            {{ obj.hot_href|truncatechars:50 }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ obj.hot_num }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-5" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                       <table class="table table-bordered table-hover dataTables-example three-color-table">
+                                            <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for obj in tiyu_rank_list %}
+                                                <tr class="gradeX">
+                                                    <td>{{ obj.rank }}</td>
+                                                    <td>{{ obj.hot_title }}</td>
+                                                    <td>
+                                                        <a href="{{ obj.hot_href }}" target="_blank" rel="noopener noreferrer">
+                                                            {{ obj.hot_href|truncatechars:50 }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ obj.hot_num }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-6" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                       <table class="table table-bordered table-hover dataTables-example three-color-table">
+                                            <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for obj in youxi_rank_list %}
+                                                <tr class="gradeX">
+                                                    <td>{{ obj.rank }}</td>
+                                                    <td>{{ obj.hot_title }}</td>
+                                                    <td>
+                                                        <a href="{{ obj.hot_href }}" target="_blank" rel="noopener noreferrer">
+                                                            {{ obj.hot_href|truncatechars:50 }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ obj.hot_num }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>热搜</th>
+                                                <th>直达链接</th>
+                                                <th>热度</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+        {#       -------------------------------上方新热搜榜--------------------------------- #}
+
+        {#       -------------------------------上方卡片--------------------------------- #}
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <div class="panel blank-panel">
+                        <div class="panel-options">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="trace.html#img-1"
+                                                      aria-expanded="false">热搜</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-2"
+                                                aria-expanded="true">文娱</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-3"
+                                                aria-expanded="true">要闻</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-4"
+                                                aria-expanded="true">校园</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-5"
+                                                aria-expanded="true">体育</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-6"
+                                                aria-expanded="true">游戏</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ <!-------------------------上方图片选项卡切换----------------->
+             <div class="ibox-content">
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div id="img-1" class="tab-pane active">
+                            <div class="item active">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/hot.png">
+                            </div>
+                        </div>
+                        <div id="img-2" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/wenyu.png">
+                            </div>
+                        </div>
+                        <div id="img-3" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/yaowen.png">
+                            </div>
+                        </div>
+                        <div id="img-4" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/xiaoyuan.png">
+                            </div>
+                        </div>
+                        <div id="img-5" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/tiyu.png">
+                            </div>
+                        </div>
+                         <div id="img-6" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/youxi.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{# --------------------------------------下方分类话题占比-------------------------------------------#}
+                 <div class="row">
+                    <div class="col-lg-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>热词top10</h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-up"></i>
+                                    </a>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">
+                                        <i class="fa fa-wrench"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-user">
+                                        <li><a href="graph_flot.html#">选项1</a></li>
+                                        <li><a href="graph_flot.html#">选项2</a></li>
+                                    </ul>
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div style="height:600px" id="series"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{#                    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>#}
+                    <script>
+                        var chartDom = document.getElementById('series');
+                        var myChart = echarts.init(chartDom);
+                        var option;
+
+                        const data = genData(50); // 生成50个随机话题数据
+                        option = {
+                          title: {
+                            text: '微博热门话题统计',
+                            subtext: '',
+                            left: 'center'
+                          },
+                          tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                          },
+                          legend: {
+                            type: 'scroll',
+                            orient: 'vertical',
+                            right: 10,
+                            top: 20,
+                            bottom: 20,
+                            data: data.legendData
+                          },
+                          series: [
+                            {
+                              name: '话题',
+                              type: 'pie',
+                              radius: '55%',
+                              center: ['40%', '50%'],
+                              data: data.seriesData,
+                              emphasis: {
+                                itemStyle: {
+                                  shadowBlur: 10,
+                                  shadowOffsetX: 0,
+                                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                              }
+                            }
+                          ]
+                        };
+
+                        function genData(count) {
+                          // 模拟一些微博热搜话题
+                          const topicList = [
+                            '热门', '时尚', '音乐', '综艺', '美食', '萌宠', '电影', '颜值', '动漫', '设计',
+                            '科技', '情感', '搞笑', '短句', '印象', '周末', '财经', '法律', '摄影', '校园',
+                            '军事', '好物', '养身', '育儿', '教育', '舞蹈', '瘦身', '国际'
+                          ];
+
+                          const legendData = [];
+                          const seriesData = [];
+
+                          // 创建一个复制的 topicList 并随机排序
+                          const shuffledList = topicList.slice();
+                          shuffleArray(shuffledList);
+
+                          // 只取 count 个话题，确保没有重复
+                          for (let i = 0; i < count && i < shuffledList.length; i++) {
+                            const topic = shuffledList[i];
+                            legendData.push(topic);
+                            seriesData.push({
+                              name: topic,
+                              value: Math.round(Math.random() * 100000) // 随机生成占比数据
+                            });
+                          }
+
+                          return {
+                            legendData: legendData,
+                            seriesData: seriesData
+                          };
+                        }
+
+                        // 用 Fisher-Yates 算法打乱数组顺序
+                        function shuffleArray(array) {
+                          for (let i = array.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [array[i], array[j]] = [array[j], array[i]]; // 交换位置
+                          }
+                        }
+
+                        option && myChart.setOption(option);
+                    </script>
+
+
+
+
+
+                <!------------------------下方活跃用户展示----------------------------------------->
+
+
+
+<div class="col-lg-6">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>近一周情感占比</h5>
+        </div>
+        <div class="ibox-content">
+            <div id="zhanbi" style="width: 100%;height: 445px">
+                <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+                <script type="text/javascript">
+                    var dom = document.getElementById('zhanbi');
+                    var myChart = echarts.init(dom, null, {
+                        renderer: 'canvas',
+                        useDirtyRect: false
+                    });
+                    var app = {};
+
+                    var option;
+
+                    option = {
+                        series: [
+                            {
+                                type: 'gauge',
+                                startAngle: 180,
+                                endAngle: 0,
+                                center: ['50%', '75%'],
+                                radius: '90%',
+                                min: 0,
+                                max: 1,
+                                splitNumber: 2,  // Split into 3 sections
+                                axisLine: {
+                                    lineStyle: {
+                                        width: 6,
+                                        color: [
+                                            [0.33, '#FF6E76'],  // Negative (red)
+                                            [0.66, '#FDDD60'],  // Neutral (yellow)
+                                            [1, '#58D9F9']      // Positive (blue)
+                                        ]
+                                    }
+                                },
+                                pointer: {
+                                    icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+                                    length: '12%',
+                                    width: 20,
+                                    offsetCenter: [0, '-60%'],
+                                    itemStyle: {
+                                        color: 'auto'
+                                    }
+                                },
+                                axisTick: {
+                                    length: 12,
+                                    lineStyle: {
+                                        color: 'auto',
+                                        width: 2
+                                    }
+                                },
+                                splitLine: {
+                                    length: 20,
+                                    lineStyle: {
+                                        color: 'auto',
+                                        width: 5
+                                    }
+                                },
+                                axisLabel: {
+                                    color: '#464646',
+                                    fontSize: 20,
+                                    distance: -60,
+                                    rotate: 'tangential',
+                                    formatter: function (value) {
+                                        if (value === 0) {
+                                            return '消极';  // Negative
+                                        } else if (value === 0.5) {
+                                            return '中性';  // Neutral
+                                        } else if (value === 1) {
+                                            return '积极';  // Positive
+                                        }
+                                        return '';
+                                    }
+                                },
+                                title: {
+                                    offsetCenter: [0, '-10%'],
+                                    fontSize: 20
+                                },
+                                detail: {
+                                    fontSize: 30,
+                                    offsetCenter: [0, '-35%'],
+                                    valueAnimation: true,
+                                    formatter: function (value) {
+                                        return value === 0 ? '消极' : (value === 0.5 ? '中性' : '积极');
+                                    },
+                                    color: 'inherit'
+                                },
+                                data: [
+                                    {
+                                        value: {% for obj in huati_add_5 %}{{ obj.zhishu_all|safe }}{% endfor %},
+                                        name: '情绪评分'
+                                    }
+                                ]
+                            }
+                        ]
+                    };
+
+                    if (option && typeof option === 'object') {
+                        myChart.setOption(option);
+                    }
+
+                    window.addEventListener('resize', myChart.resize);
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+                    <div class="col-lg-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>近一周情感占比</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div id="mainbing" style="width: 100%;height: 445px">
+                                    <script type="text/javascript"
+                                            src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+                                    <script type="text/javascript">
+                                        var dom = document.getElementById('mainbing');
+                                        var myChart = echarts.init(dom, null, {
+                                            renderer: 'canvas',
+                                            useDirtyRect: false
+                                        });
+                                        var app = {};
+
+                                        var option;
+
+                                        option = {
+                                            tooltip: {
+                                                trigger: 'item'
+                                            },
+                                            legend: {
+                                                top: '5%',
+                                                left: 'center'
+                                            },
+                                            series: [
+                                                {
+                                                    name: '话题情感',
+                                                    type: 'pie',
+                                                    radius: ['40%', '70%'],
+                                                    color: ['#ef6567', '#f9c956', '#91cd77'],
+                                                    avoidLabelOverlap: false,
+                                                    itemStyle: {
+                                                        borderRadius: 10,
+                                                        borderColor: '#fff',
+                                                        borderWidth: 2
+                                                    },
+                                                    label: {
+                                                        show: false,
+                                                        position: 'center'
+                                                    },
+                                                    emphasis: {
+                                                        label: {
+                                                            show: true,
+                                                            fontSize: 40,
+                                                            fontWeight: 'bold'
+                                                        }
+                                                    },
+                                                    labelLine: {
+                                                        show: false
+                                                    },
+                                                    data: [
+                                                        {% for obj in huati_add_5 %}
+                                                            {value: {{ obj.jiji_add|safe}}, name: '积极'},
+                                                            {value: {{ obj.zhongxing_add|safe}}, name: '中性'},
+                                                            {value: {{ obj.xiaoji_add|safe}}, name: '消极'},
+                                                        {% endfor %}
+
+                                                    ]
+                                                }
+                                            ]
+                                        };
+
+                                        if (option && typeof option === 'object') {
+                                            myChart.setOption(option);
+                                        }
+
+                                        window.addEventListener('resize', myChart.resize);
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# 活跃用户展示  #}
+
+                   <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>热词top10</h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-up"></i>
+                                    </a>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">
+                                        <i class="fa fa-wrench"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-user">
+                                        <li><a href="graph_flot.html#">选项1</a></li>
+                                        <li><a href="graph_flot.html#">选项2</a></li>
+                                    </ul>
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div style="height:600px" id="Top10"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+{#<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.8/dist/echarts.min.js"></script>#}
+                <script>
+                    // 初始化 ECharts 实例并绑定到目标容器
+                    var chartDom = document.getElementById('Top10');
+                    var myChart = echarts.init(chartDom);
+                    var option;
+
+                    // 配置 ECharts 图表的参数
+                    option = {
+                        title: {
+                            text: '热词Top'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        legend: {},
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'value',
+                            boundaryGap: [0, 0.01]
+                        },
+                        yAxis: {
+                            type: 'category',
+                            data: [
+                                'Vlog',
+                                '创造营亚洲',
+                                '甲亢哥游中国',
+                                '潘玮柏',
+                                '特朗普',
+                                '向阳花',
+                                '乌云之上',
+                                '乘风2025',
+                                '跳水世界杯',
+                                '美对多国增加关税'
+                            ]
+                        },
+                        series: {
+                            name: '热词个数',
+                            type: 'bar',
+                            data: [5, 17, 15, 11, 11, 10, 15, 18, 10, 14]
+                        }
+                    };
+
+                    // 将配置项设置到图表中
+                    option && myChart.setOption(option);
+                </script>
+
+
+
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>地区统计</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="graph_flot.html#">选项1</a>
+                                    </li>
+                                    <li><a href="graph_flot.html#">选项2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div style="height:600px" id="echarts-map-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#            #}
+        </div>
+
+        {#       -------------------------------上方百度charts--------------------------------- #}
+
+    </div>
+
+{% endblock %}
+
+{#________________________________________________________我叫分割线___________________________________________________________________#}
+{% block js %}
+
+    <script src="../static/js/echarts-wordcloud.js"></script>
+    <!-- Mainly scripts -->
+    <script src="../static/js/jquery-2.1.1.min.js"></script>
+    <script src="../static/js/bootstrap.min.js?v=3.4.0"></script>
+
+    <script src="../static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="../static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+    <script src="../static/js/plugins/echarts/echarts-all.js"></script>
+
+    {#    -------------------下面-echarts图---------------------------------------------------------------#}
+    <script>
+        $(function () {
+
+            var mapChart = echarts.init(document.getElementById("echarts-map-chart"));
+            var mapoption = {
+                title: {
+                    text: '全国各地区活跃程度',
+                    subtext: '近期发帖数',
+                    x: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                    data: ['发帖数']
+                },
+                dataRange: {
+                    min: 0,
+                    max: 200000,
+                    x: 'left',
+                    y: 'bottom',
+                    text: ['高', '低'],           // 文本，默认为数值文本
+                    calculable: true
+                },
+                toolbox: {
+                    show: true,
+                    orient: 'vertical',
+                    x: 'right',
+                    y: 'center',
+                    feature: {
+                        mark: {show: true},
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                roamController: {
+                    show: true,
+                    x: 'right',
+                    mapTypeControl: {
+                        'china': true
+                    }
+                },
+                series: [
+                    {
+                        name: '发帖数',
+                        type: 'map',
+                        mapType: 'china',
+                        roam: false,
+                        itemStyle: {
+                            normal: {label: {show: true}},
+                            emphasis: {label: {show: true}}
+                        },
+                        data: [
+                            {name: '北京', value: Math.round(Math.random() * 200000)},
+                            {name: '天津', value: Math.round(Math.random() * 200000)},
+                            {name: '上海', value: Math.round(Math.random() * 200000)},
+                            {name: '重庆', value: Math.round(Math.random() * 200000)},
+                            {name: '河北', value: Math.round(Math.random() * 200000)},
+                            {name: '河南', value: Math.round(Math.random() * 200000)},
+                            {name: '云南', value: Math.round(Math.random() * 200000)},
+                            {name: '辽宁', value: Math.round(Math.random() * 200000)},
+                            {name: '黑龙江', value: Math.round(Math.random() * 200000)},
+                            {name: '湖南', value: Math.round(Math.random() * 200000)},
+                            {name: '安徽', value: Math.round(Math.random() * 200000)},
+                            {name: '山东', value: Math.round(Math.random() * 200000)},
+                            {name: '新疆', value: Math.round(Math.random() * 200000)},
+                            {name: '江苏', value: Math.round(Math.random() * 200000)},
+                            {name: '浙江', value: Math.round(Math.random() * 200000)},
+                            {name: '江西', value: Math.round(Math.random() * 200000)},
+                            {name: '湖北', value: Math.round(Math.random() * 200000)},
+                            {name: '广西', value: Math.round(Math.random() * 200000)},
+                            {name: '甘肃', value: Math.round(Math.random() * 200000)},
+                            {name: '山西', value: Math.round(Math.random() * 200000)},
+                            {name: '内蒙古', value: Math.round(Math.random() * 200000)},
+                            {name: '陕西', value: Math.round(Math.random() * 200000)},
+                            {name: '吉林', value: Math.round(Math.random() * 200000)},
+                            {name: '福建', value: Math.round(Math.random() * 200000)},
+                            {name: '贵州', value: Math.round(Math.random() * 200000)},
+                            {name: '广东', value: Math.round(Math.random() * 200000)},
+                            {name: '青海', value: Math.round(Math.random() * 200000)},
+                            {name: '西藏', value: Math.round(Math.random() * 200000)},
+                            {name: '四川', value: Math.round(Math.random() * 200000)},
+                            {name: '宁夏', value: Math.round(Math.random() * 200000)},
+                            {name: '海南', value: Math.round(Math.random() * 200000)},
+                            {name: '台湾', value: Math.round(Math.random() * 200000)},
+                            {name: '香港', value: Math.round(Math.random() * 200000)},
+                            {name: '澳门', value: Math.round(Math.random() * 200000)}
+                        ]
+                    },
+                ]
+            };
+            mapChart.setOption(mapoption);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            <!-- Enable portlets -->
+            WinMove();
+        });
+    </script>
+
+    {#    ------------------------------------------------------------------#}
+    <script>
+        $(document).ready(function () {
+            $('.dataTables-example').dataTable();
+
+            /* Init DataTables */
+            var oTable = $('#editable').dataTable();
+
+            /* Apply the jEditable handlers to the table */
+            oTable.$('td').editable('../example_ajax.php', {
+                "callback": function (sValue, y) {
+                    var aPos = oTable.fnGetPosition(this);
+                    oTable.fnUpdate(sValue, aPos[0], aPos[1]);
+                },
+                "submitdata": function (value, settings) {
+                    return {
+                        "row_id": this.parentNode.getAttribute('id'),
+                        "column": oTable.fnGetPosition(this)[2]
+                    };
+                },
+
+                "width": "90%",
+                "height": "100%"
+            });
+
+
+        });
+
+        function fnClickAddRow() {
+            $('#editable').dataTable().fnAddData([
+                "Custom row",
+                "New row",
+                "New row",
+                "New row",
+                "New row"]);
+
+        }
+    </script>
+{% endblock %}
+
+
+

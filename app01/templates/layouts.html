@@ -1,0 +1,263 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>新建任务</h2>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+
+    <!-- <div class="col-lg-6"> -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-content text-center p-md" style="width: 1100px;margin-left:auto; margin-right:auto">
+            <div style="display:block; margin-left:auto; margin-right:auto ;margin-top:20px;">
+                <div>
+                    <h3>新建任务</h3>
+                    <form method="post" action="/layouts/">
+                        {% csrf_token %}
+                        <input type="text" id="id" placeholder="请输入编号">
+                        <input type="text" id="name" placeholder="输入你想要了解的话题或者超话" style="width: 500px;">
+                        <input type="text" id="time" placeholder="请输入时间">
+                        <input type="button" value="添加" id="btn_add">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- </div> -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-content text-center p-md"
+             style="height: 500px;width: 1100px;margin-left:auto; margin-right:auto">
+            <div class="col-lg-12" style="display:block;margin-left:auto; margin-right:auto">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>管理任务</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;vertical-align: middle !important;">序号</th>
+                                <th style="text-align: center;vertical-align: middle !important;">任务名称</th>
+                                <th style="text-align: center;vertical-align: middle !important;">创建时间</th>
+                                <th style="text-align: center;vertical-align: middle !important;">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="view">
+{#                            <tr>#}
+{#                                <td>1</td>#}
+{#                                <td>#}
+{#                                    123#}
+{#                                </td>#}
+{#                                <td>2022/1/3 23:44:16</td>#}
+{#                                <td><a href="javascript:void(0);" onclick="de(this);">删除</a></td>#}
+{#                            </tr>#}
+                            {% for obj in data_list %}
+                            <tr>
+                                <td>{{ obj.id }}</td>
+                                <td>{{ obj.name }}</td>
+                                <td>{{ obj.time }}</td>
+                                <td><a href="javascript:void(0);" onclick="de(this);">删除</a></td>
+                                {% endfor %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+
+        document.getElementById("btn_add").onclick = function () {
+            var id = document.getElementById("id").value;
+            var name = document.getElementById("name").value;
+            var time = document.getElementById("time").value;
+
+            var td_id = document.createElement("td");
+            var text_id = document.createTextNode(id);
+            td_id.appendChild(text_id);
+
+            var td_name = document.createElement("td");
+            var text_name = document.createTextNode(name);
+            td_name.appendChild(text_name);
+
+            var td_time = document.createElement("td");
+            var text_time = document.createTextNode(time);
+            td_time.appendChild(text_time);
+
+            var td_a = document.createElement("td");
+            var ele_a = document.createElement("a");
+            ele_a.setAttribute("href", "javascript:void(0);");
+            ele_a.setAttribute("onclick", "de(this);");
+            var text_a = document.createTextNode("删除");
+            ele_a.appendChild(text_a);
+            td_a.appendChild(ele_a);
+
+            var tr = document.createElement("tr");
+            tr.appendChild(td_id);
+            tr.appendChild(td_name);
+            tr.appendChild(td_time);
+            tr.appendChild(td_a);
+            var table = document.getElementsByTagName("table")[0];
+            table.appendChild(tr);
+        }
+
+        function de(x) {
+            var table = x.parentNode.parentNode.parentNode;
+            var tr = x.parentNode.parentNode;
+            table.removeChild(tr);
+        }
+    </script>
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('.chart').easyPieChart({
+                barColor: '#f8ac59',
+                //                scaleColor: false,
+                scaleLength: 5,
+                lineWidth: 4,
+                size: 80
+            });
+
+            $('.chart2').easyPieChart({
+                barColor: '#1c84c6',
+                //                scaleColor: false,
+                scaleLength: 5,
+                lineWidth: 4,
+                size: 80
+            });
+
+            var d1 = [
+                [1262304000000, 1],
+                [1264982400000, 100],
+                [1267401600000, 1],
+                [1270080000000, 200],
+                [1272672000000, 1],
+                [1275350400000, 100],
+                [1277942400000, 1],
+                [1280620800000, 300]
+            ];
+            var d2 = [
+                [1262304000000, 100],
+                [1264982400000, 1],
+                [1267401600000, 150],
+                [1270080000000, 1],
+                [1272672000000, 230],
+                [1275350400000, 1],
+                [1277942400000, 150],
+                [1280620800000, 10]
+            ];
+
+            var data3 = [
+                {
+                    label: "Data 1",
+                    data: d1,
+                    color: '#23c6c8'
+                },
+                {
+                    label: "Data 2",
+                    data: d2,
+                    color: '#1ab394'
+                }
+            ];
+            $.plot($("#flot-chart3"), data3, {
+                xaxis: {
+                    tickDecimals: 0
+                },
+                series: {
+                    lines: {
+                        show: true,
+                        fill: true,
+                        fillColor: {
+                            colors: [{
+                                opacity: 1
+                            }, {
+                                opacity: 1
+                            }]
+                        },
+                    },
+                    curvedLines: {
+                        active: true,
+                        fit: true,
+                        apply: true
+                    },
+                    points: {
+                        width: 0.1,
+                        show: false
+                    },
+                },
+                grid: {
+                    show: false,
+                    borderWidth: 0
+                },
+                legend: {
+                    show: false,
+                }
+            });
+
+
+            var mapData = {
+                "US": 298,
+                "SA": 200,
+                "DE": 220,
+                "FR": 540,
+                "CN": 120,
+                "AU": 760,
+                "BR": 550,
+                "IN": 200,
+                "GB": 120,
+            };
+
+            $('#world-map').vectorMap({
+                map: 'world_mill_en',
+                backgroundColor: "transparent",
+                regionStyle: {
+                    initial: {
+                        fill: '#e4e4e4',
+                        "fill-opacity": 0.9,
+                        stroke: 'none',
+                        "stroke-width": 0,
+                        "stroke-opacity": 0
+                    }
+                },
+
+                series: {
+                    regions: [{
+                        values: mapData,
+                        scale: ["#1ab394", "#22d6b1"],
+                        normalizeFunction: 'polynomial'
+                    }]
+                },
+            });
+        });
+    </script>
+{% endblock %}
+</body>
+
+</html>

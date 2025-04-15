@@ -1,0 +1,2051 @@
+{% extends "new_layout_2.html" %}
+{% load static %}
+{% block css %}
+
+    <link href="../static/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+    <link href="../static/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../static/css/animate.css" rel="stylesheet">
+    <link href="../static/css/style.css?v=2.2.0" rel="stylesheet">
+
+
+{% endblock %}
+{##}
+{% block content %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-4">
+            <h2>话题信息</h2>
+        </div>
+    </div>
+
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>热点话题多信息展示——时间序列</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="graph_flot.html#">选项1</a>
+                    </li>
+                    <li><a href="graph_flot.html#">选项2</a>
+                    </li>
+                </ul>
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+        </div>
+        <div id="mainsandian" style="height: 400px;width: 100%;margin: 0"></div>
+
+
+        <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+
+
+    <script type="text/javascript">
+
+
+        var chartDom = document.getElementById('mainsandian');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+
+        const schema = [
+            {name: 'date', index: 0, text: '日'},
+            {name: 'AQIindex', index: 1, text: '关注热量度'},
+            {name: 'PM25', index: 2, text: '今日阅读量'},
+            {name: 'PM10', index: 3, text: '今日讨论量'},
+            {name: 'CO', index: 4, text: '情感指数'}
+        ];
+
+        option = {
+            color: ['#dd4444', '#fec42c', '#80F1BE'],
+            legend: {
+                top: 10,
+                data: ['积极', '中性', '消极'],
+                textStyle: {
+                    fontSize: 16
+                }
+            },
+            grid: {
+                left: '10%',
+                right: 150,
+                top: '18%',
+                bottom: '10%'
+            },
+            tooltip: {
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                formatter: function (param) {
+                    var value = param.value;
+
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                        + value[0] + '日' + ' ' + param.seriesName + "："
+                        + value[5]
+                        + '</div>'
+                        + schema[1].text + '：' + value[1] + '万' + '<br>'
+                        + schema[2].text + '：' + value[2] + '万' + '<br>'
+                        + schema[3].text + '：' + value[3] + '万' + '<br>'
+                        + schema[4].text + '：' + value[4] + '<br>'
+                        ;
+                }
+            },
+            xAxis: {
+                type: 'value',
+                name: '日期',
+                nameGap: 16,
+                nameTextStyle: {
+                    fontSize: 16
+                },
+                max: 26,
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '关注热量度',
+                nameLocation: 'end',
+                nameGap: 20,
+                axisLabel: {
+                    formatter: '{value} 万'
+                },
+                nameTextStyle: {
+                    fontSize: 16
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+            visualMap: [
+                {
+                    left: 'right',
+                    top: '10%',
+                    dimension: 2,
+                    min: 0,
+                    max: 150,
+                    itemWidth: 30,
+                    itemHeight: 120,
+                    calculable: true,
+                    precision: 0.1,
+                    text: ['圆形大小：阅读量(万)'],
+                    textGap: 30,
+                    inRange: {
+                        symbolSize: [10, 70]
+                    },
+                    outOfRange: {
+                        symbolSize: [10, 70],
+                        color: ['rgba(255,255,255,0.4)']
+                    },
+                    controller: {
+                        inRange: {
+                            color: ['#c23531']
+                        },
+                        outOfRange: {
+                            color: ['#999']
+                        }
+                    }
+                },
+                {
+                    left: 'right',
+                    bottom: '5%',
+                    dimension: 4,
+                    min: 0,
+                    max: 1,
+                    itemHeight: 120,
+                    text: ['明暗：情感指数'],
+                    textGap: 30,
+                    inRange: {
+                        colorLightness: [0.9, 0.5]
+                    },
+                    outOfRange: {
+                        color: ['rgba(255,255,255,0.4)']
+                    },
+                    controller: {
+                        inRange: {
+                            color: ['#c23531']
+                        },
+                        outOfRange: {
+                            color: ['#999']
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name:
+                        {
+                            normal: {
+                                str: function (params) {
+                                    var strlist = ['积极', '消极', '中性'];
+                                    return strlist[params.data[7]];
+                                }
+                            }
+                        },
+                    type: 'scatter',
+                    itemStyle: {
+                        opacity: 0.8,
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 0,
+                        shadowColor: 'rgba(0,0,0,0.3)',
+                        normal: {
+                            color: function (params) {
+                                var colorList = ['#dd4444', '#fec42c', '#80F1BE'];
+                                return colorList[params.data[7]];
+                            }
+                        },
+                    },
+                    data: [
+                       // 积极
+                            [
+                                1,
+                                100,
+                                80,
+                                56,
+                                0.8846,
+                                '偶遇赵露思谈工作',
+                                'https://s.weibo.com/weibo?q=%23%E5%81%B6%E9%81%87%E8%B5%B5%E9%9C%B2%E6%80%9D%E8%B0%88%E5%B7%A5%E4%BD%9C%23&t=31&band_rank=35&Refer=top',
+                                0
+                            ],
+                            [
+                                2,
+                                73,
+                                71,
+                                21,
+                                0.7532,
+                                '华人志愿者带药品卫生巾奔赴震区',
+                                'https://s.weibo.com/weibo?q=%23%E5%8D%8E%E4%BA%BA%E5%BF%97%E6%84%BF%E8%80%85%E5%B8%A6%E8%8D%AF%E5%93%81%E5%8D%AB%E7%94%9F%E5%B7%BE%E5%A5%94%E8%B5%B4%E9%9C%87%E5%8C%BA%23&t=31&band_rank=10&Refer=top',
+                                0
+                            ],
+                            [3, 67, 50, 63, 0.7727, '外资企业是中国式现代化的重要参与者', 'https://s.weibo.com/weibo?q=%23%E5%A4%96%E8%B5%84%E4%BC%81%E4%B8%9A%E6%98%AF%E4%B8%AD%E5%9B%BD%E5%BC%8F%E7%8E%B0%E4%BB%A3%E5%8C%96%E7%9A%84%E9%87%8D%E8%A6%81%E5%8F%82%E4%B8%8E%E8%80%85%23&Refer=new_time', 0],
+                            [4, 88, 73, 59, 0.8255, '杭州大伯被蛇咬用嘴吸毒液紧急入院', 'https://s.weibo.com/weibo?q=%23%E6%9D%AD%E5%B7%9E%E5%A4%A7%E4%BC%AF%E8%A2%AB%E8%9B%87%E5%92%AC%E7%94%A8%E5%98%B4%E5%90%B8%E6%AF%92%E6%B6%B2%E7%B4%A7%E6%80%A5%E5%85%A5%E9%99%A2%23&t=31&band_rank=18&Refer=top', 0],
+                            [
+                                5,
+                                72,
+                                54,
+                                44,
+                                0.7938,
+                                '泰国女子见到中国救援队后泪目'
+                                , 'https://s.weibo.com/weibo?q=%23%E6%B3%B0%E5%9B%BD%E5%A5%B3%E5%AD%90%E8%A7%81%E5%88%B0%E4%B8%AD%E5%9B%BD%E6%95%91%E6%8F%B4%E9%98%9F%E5%90%8E%E6%B3%AA%E7%9B%AE%23&t=31&band_rank=26&Refer=top',
+                                0
+                            ],
+                            [6, 62, 68, 90, 0.8909, '王宝强棋士信息量好大', 'https://s.weibo.com/weibo?q=%E7%8E%8B%E5%AE%9D%E5%BC%BA%E6%A3%8B%E5%A3%AB%E4%BF%A1%E6%81%AF%E9%87%8F%E5%A5%BD%E5%A4%A7&t=31&band_rank=39&Refer=top', 0],
+                            [
+                                7,
+                                54,
+                                69,
+                                77,
+                                0.7957,
+                                '缅甸一中企用汶川地震知识成功避险', 'https://s.weibo.com/weibo?q=%23%E7%BC%85%E7%94%B8%E4%B8%80%E4%B8%AD%E4%BC%81%E7%94%A8%E6%B1%B6%E5%B7%9D%E5%9C%B0%E9%9C%87%E7%9F%A5%E8%AF%86%E6%88%90%E5%8A%9F%E9%81%BF%E9%99%A9%23&t=31&band_rank=40&Refer=top', 0
+                            ],
+                            [8, 216, 106, 80, 0.8968, '金秀贤联系雪莉母亲', 'https://s.weibo.com/weibo?q=%23%E9%87%91%E7%A7%80%E8%B4%A4%E8%81%94%E7%B3%BB%E9%9B%AA%E8%8E%89%E6%AF%8D%E4%BA%B2%23&t=31&band_rank=42&Refer=top', 0],
+                            [9, 267, 216, 280, 0.8321, '陈哲远状态这么好奖励一部现偶', 'https://s.weibo.com/weibo?q=%E9%99%88%E5%93%B2%E8%BF%9C%E7%8A%B6%E6%80%81%E8%BF%99%E4%B9%88%E5%A5%BD%E5%A5%96%E5%8A%B1%E4%B8%80%E9%83%A8%E7%8E%B0%E5%81%B6&t=31&band_rank=34&Refer=top', 0],
+                            [10, 185, 127, 216, 0.52125, '新90四大一番花','https://s.weibo.com/weibo?q=%E8%8B%A6%E5%B0%BD%E6%9F%91%E6%9D%A5%E9%81%87%E8%A7%81%E4%BD%A0%20%E5%BC%A0%E5%AE%B6%E7%95%8C&t=31&band_rank=1&Refer=top', 0],
+                            [11, 39, 19, 38, 0.57107, '沈月是快大2第一期总导演', 'https://s.weibo.com/weibo?q=%23%E5%8F%8C%E8%83%9E%E8%83%8E%E5%BD%93%E4%BA%861%E5%B9%B4%E6%9C%8B%E5%8F%8B%E6%89%8D%E5%8F%91%E7%8E%B0%E6%98%AF%E4%BA%B2%E5%A7%90%E5%A6%B9%23&t=31&band_rank=12&Refer=top', 0],
+                            [12, 41, 11, 40, 0.43002, '优', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            [13, 64, 38, 74, 0.74524, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            [14, 108, 79, 120, 0.7103, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            [15, 108, 63, 116, 0.4802, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 0],
+                            // 消极
+                            [1, 36, 27, 27, 0.4632, '新秀王安冉离婚', 'https://s.weibo.com/weibo?q=%23%E5%A4%96%E8%B5%84%E4%BC%81%E4%B8%9A%E6%98%AF%E4%B8%AD%E5%9B%BD%E5%BC%8F%E7%8E%B0%E4%BB%A3%E5%8C%96%E7%9A%84%E9%87%8D%E8%A6%81%E5%8F%82%E4%B8%8E%E8%80%85%23&Refer=new_time', 1],
+                            [2, 30, 22, 71, 0.3951, '王宝宝出轨', 'https://s.weibo.com/weibo?q=%23%E6%97%A5%E6%9C%AC%E7%AC%AC11%E8%BD%AE%E6%A0%B8%E6%B1%A1%E6%9F%93%E6%B0%B4%E6%8E%92%E6%B5%B7%E7%BB%93%E6%9D%9F%23&t=31&band_rank=4&Refer=top', 1],
+                            [2, 277, 216, 364, 0.3632, '韩安冉回应与婆婆矛盾', 'https://s.weibo.com/weibo?q=%23%E5%8D%8E%E4%BA%BA%E5%BF%97%E6%84%BF%E8%80%85%E5%B8%A6%E8%8D%AF%E5%93%81%E5%8D%AB%E7%94%9F%E5%B7%BE%E5%A5%94%E8%B5%B4%E9%9C%87%E5%8C%BA%23&t=31&band_rank=10&Refer=top', 1],
+                            [3, 255, 207, 367, 0.4346, '陈哲远这次是wink不是weak', 'https://s.weibo.com/weibo?q=%233%E4%BD%8D%E8%87%AA%E6%9D%80%E5%A5%B3%E6%98%9F%E5%9D%87%E4%B8%8E%E9%87%91%E7%A7%80%E8%B4%A4%E5%85%AC%E5%8F%B8%E6%9C%89%E5%85%B3%E8%81%94%23&t=31&band_rank=24&Refer=top', 1],
+                            [4, 153, 97, 46, 0.3159, '王宝强新剧拿稳黑莲花剧本', 'https://s.weibo.com/weibo?q=%E9%99%88%E5%93%B2%E8%BF%9C%E7%8A%B6%E6%80%81%E8%BF%99%E4%B9%88%E5%A5%BD%E5%A5%96%E5%8A%B1%E4%B8%80%E9%83%A8%E7%8E%B0%E5%81%B6&t=31&band_rank=34&Refer=top', 1],
+                            [5, 52, 52, 46, 0.3150, '陈志朋把还珠格格播出时间写错了', 'https://s.weibo.com/weibo?q=%23%E5%81%B6%E9%81%87%E8%B5%B5%E9%9C%B2%E6%80%9D%E8%B0%88%E5%B7%A5%E4%BD%9C%23&t=31&band_rank=35&Refer=top', 1],
+                            [6, 26, 38, 69, 0.3671, '黄旭华92岁离休第二天又拄着拐出现', 'https://s.weibo.com/weibo?q=%23%E9%BB%84%E6%97%AD%E5%8D%8E92%E5%B2%81%E7%A6%BB%E4%BC%91%E7%AC%AC%E4%BA%8C%E5%A4%A9%E5%8F%88%E6%8B%84%E7%9D%80%E6%8B%90%E5%87%BA%E7%8E%B0%23&t=31&band_rank=2&Refer=top', 1],
+                            [8, 55, 48, 74, 0.3362, '你觉得工资越高越幸福吗', 'https://s.weibo.com/weibo?q=%23%E4%BD%A0%E8%A7%89%E5%BE%97%E5%B7%A5%E8%B5%84%E8%B6%8A%E9%AB%98%E8%B6%8A%E5%B9%B8%E7%A6%8F%E5%90%97%23', 1],
+                            [9, 76, 85, 113, 0.2373, '胃病转向胃癌有5个信号', 'https://s.weibo.com/weibo?q=%23%E8%83%83%E7%97%85%E8%BD%AC%E5%90%91%E8%83%83%E7%99%8C%E6%9C%895%E4%B8%AA%E4%BF%A1%E5%8F%B7%23', 1],
+                            [10, 91, 81, 104, 0.0414, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [11, 84, 39, 60, 0.9645, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [12, 64, 51, 101, 0.8626, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [13, 70, 69, 120, 0.198, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [14, 77, 105, 178, 0.549, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            [15, 109, 68, 87, 0.996, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 1],
+                            //中性
+                            [1, 91, 55, 95, 0.62, '算法向上向善', 'https://s.weibo.com/weibo?q=%23%E7%AE%97%E6%B3%95%E5%90%91%E4%B8%8A%E5%90%91%E5%96%84%23&t=31&band_rank=3&Refer=top', 2],
+                            [2, 150, 97, 78, 0.66, '苦尽柑来遇见你 张家界', 'https://s.weibo.com/weibo?q=%E8%8B%A6%E5%B0%BD%E6%9F%91%E6%9D%A5%E9%81%87%E8%A7%81%E4%BD%A0%20%E5%BC%A0%E5%AE%B6%E7%95%8C&t=31&band_rank=1&Refer=top', 2],
+                            [3, 83, 60, 84, 0.69, '英雄之光', 'https://s.weibo.com/weibo?q=%23%E8%8B%B1%E9%9B%84%E4%B9%8B%E5%85%89%23', 2],
+                            [4, 109, 81, 121, 0.6832, '辣目洋子辣眼版还珠格格', 'https://s.weibo.com/weibo?q=%E8%BE%A3%E7%9B%AE%E6%B4%8B%E5%AD%90%E8%BE%A3%E7%9C%BC%E7%89%88%E8%BF%98%E7%8F%A0%E6%A0%BC%E6%A0%BC&t=31&band_rank=36&Refer=top', 2],
+                            [5, 36, 77, 34, 0.6713, '难怪吃菠萝嘴巴疼', 'https://s.weibo.com/weibo?q=%23%E9%9A%BE%E6%80%AA%E5%90%83%E8%8F%A0%E8%90%9D%E5%98%B4%E5%B7%B4%E7%96%BC%23', 2],
+                            [6, 49, 31, 71, 0.6873, '沈月这是能说的吗', 'https://s.weibo.com/weibo?q=%E5%BC%A0%E5%AE%B6%E7%95%8C%E8%90%BD%E5%8F%B6&t=31&band_rank=38&Refer=top', 2],
+                            [7, 86, 47, 84, 0.876653, '邓为不争先争的是滔滔不绝', 'https://s.weibo.com/weibo?q=%E7%8E%8B%E5%AE%9D%E5%BC%BA%E6%96%B0%E5%89%A7%E6%8B%BF%E7%A8%B3%E9%BB%91%E8%8E%B2%E8%8A%B1%E5%89%A7%E6%9C%AC&t=31&band_rank=47&Refer=top', 2],
+                            [8, 89, 65, 78, 0.5682, '实习成绩打高了毕不了业', 'https://s.weibo.com/weibo?q=iPhone%E6%88%AA%E5%9B%BE%E7%9A%84%E9%9A%90%E8%97%8F%E5%8A%9F%E8%83%BD&t=31&band_rank=17&Refer=top', 2],
+                            [9, 53, 33, 47, 0.6477, '专家辟谣缅甸地震将升级到9.8级', 'https://s.weibo.com/weibo?q=%233%E4%BD%8D%E8%87%AA%E6%9D%80%E5%A5%B3%E6%98%9F%E5%9D%87%E4%B8%8E%E9%87%91%E7%A7%80%E8%B4%A4%E5%85%AC%E5%8F%B8%E6%9C%89%E5%85%B3%E8%81%94%23&t=31&band_rank=24&Refer=top', 2],
+                            [10, 80, 55, 80, 0.01, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [11, 117, 81, 124, 0.03, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [12, 99, 71, 142, 0.1, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [13, 95, 69, 130, 0.28, '良', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                            [14, 116, 87, 131, 0.47, '轻度污染', 'https://s.weibo.com/weibo?q=%23%E5%BC%A0%E7%BB%A7%E7%A7%91%E5%80%9F%E6%9D%A1%23', 2],
+                             ]
+                },
+                <!--    {-->
+                <!--         name: '中性',-->
+                <!--         type: 'scatter',-->
+                <!--         itemStyle: itemStyle,-->
+                <!--         data: dataSH-->
+                <!--    },-->
+                <!--     {-->
+                <!--         name: '消极',-->
+                <!--         type: 'scatter',-->
+                <!--         itemStyle: itemStyle,-->
+                <!--         data: dataGZ-->
+                <!--     }-->
+            ]
+        };
+
+        option && myChart.setOption(option);
+        myChart.on('click', function (params) {
+            if (params.seriesType == 'scatter') {
+                var x = params.value[0];
+                var y = params.value[1];
+                var url = params.value[6];
+                window.location.href = url;
+            }
+        });
+    </script>
+    </div>
+
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>微博"热搜"榜&nbsp&nbsp&nbsp<small>分类，查找</small></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="table_data_tables.html#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="table_data_tables.html#">选项1</a>
+                                    </li>
+                                    <li><a href="table_data_tables.html#">选项2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>热搜</th>
+                                    <th>直达链接</th>
+                                    <th>热度</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for obj in data_list %}
+                                    <tr class="gradeX">
+                                    <td>{{ obj.rank }}</td>
+                                    <td>{{ obj.hot_title }}</td>
+                                   <td><a href="{{ obj.hot_href }}" style="word-wrap: break-word; word-break: break-all;">{{ obj.hot_href }}</a></td>
+                                    <td>{{ obj.hot_num }}</td>
+                                {% endfor %}
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>热搜</th>
+                                    <th>直达链接</th>
+                                    <th>热度</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="col-lg-7">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="carousel.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="trace.html#">选项1</a>
+                            </li>
+                            <li><a href="trace.html#">选项2</a>
+                            </li>
+                            <li><a href="trace.html#">选项3</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="carousel slide" id="carousel1">
+                        <div class="carousel-inner">
+                            <div class="item active">
+                                <img style="width: 810px;height: 508px" alt="image" class="img-responsive"
+                                     src="../static/img_new/315晚会.jpg.JPG">
+                            </div>
+                            <div class="item">
+                                <img style="width: 810px;height: 508px" alt="image" class="img-responsive"
+                                     src="../static/img_new/哪吒2.JPG">
+                            </div>
+                            <div class="item">
+                                <img style="width: 810px;height: 508px" alt="image" class="img-responsive"
+                                     src="../static/img_new/二十大.jpg">
+                            </div>
+
+                        </div>
+                        <a data-slide="prev" href="trace.html#carousel1" class="left carousel-control">
+                            <span class="icon-prev"></span>
+                        </a>
+                        <a data-slide="next" href="trace.html#carousel1" class="right carousel-control">
+                            <span class="icon-next"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {#-------------------------------------上方图片切换---------------------------------------------#}
+        <div class="col-lg-5">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <div class="panel blank-panel">
+                        <div class="panel-options">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="trace.html#img-1"
+                                                      aria-expanded="false">315晚会</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-2"
+                                                aria-expanded="true">哪吒2</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="trace.html#img-3"
+                                                aria-expanded="true">deepseek</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#-------------------------------------上方选项卡标题切换---------------------------------------------#}
+            <div class="ibox-content">
+                <div class="panel-body">
+
+                    <div class="tab-content">
+                        <div id="img-1" class="tab-pane active">
+                            <div class="item active">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/315.png">
+                            </div>
+                        </div>
+                        <div id="img-2" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/nezha2.png">
+                            </div>
+                        </div>
+                        <div id="img-3" class="tab-pane">
+                            <div class="item">
+                                <img alt="image" style="width: 86%;height: 86%" class="img-responsive"
+                                     src="../static/img_cloud/deepseek.png">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {#---------------------------------------------三个话题’词云‘切换-------------------------------------------------------------#}
+
+
+
+
+
+
+    {#话题分析数据#}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel blank-panel">
+                <div class="panel-options">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="trace.html#tab-3-1"
+                                              aria-expanded="false">315晚会</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="trace.html#tab-3-2"
+                                        aria-expanded="true">哪吒2</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="trace.html#tab-3-3"
+                                        aria-expanded="true">deepseek</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {#-------------------------------------上方选项卡标题切换---------------------------------------------#}
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <strong>此话题——信息追踪</strong>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="trace.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="trace.html#">选项1</a>
+                            </li>
+                            <li><a href="trace.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <div id="tab-3-1" class="tab-pane active">
+                                <div class="item active">
+                                    {#                            #}
+                                    <div>
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:16%">时间</th>
+                                                <th style="width:16%">今日阅读量</th>
+                                                <th style="width:16%">今日讨论量</th>
+                                                <th style="width:16%">今日互动量</th>
+                                                <th style="width:16%">今日原创量</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="gradeX">
+                                                <td>3.30</td>
+                                                <td>62890</td>
+                                                <td>845</td>
+                                                <td>919</td>
+                                                <td>679</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>3.31</td>
+                                                <td>52682</td>
+                                                <td>1096</td>
+                                                <td>1138</td>
+                                                <td>933</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.1</td>
+                                                <td>16574</td>
+                                                <td>1096</td>
+                                                <td>1199</td>
+                                                <td>874</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.2</td>
+                                                <td>5642</td>
+                                                <td>968</td>
+                                                <td>1194</td>
+                                                <td>796</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.3</td>
+                                                <td>7266</td>
+                                                <td>797</td>
+                                                <td>1003</td>
+                                                <td>611</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.4</td>
+                                                <td>7490</td>
+                                                <td>918</td>
+                                                <td>1299</td>
+                                                <td>718</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.5</td>
+                                                <td>4348</td>
+                                                <td>369</td>
+                                                <td>533</td>
+                                                <td>306</td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th style="width:16%">时间</th>
+                                                <th style="width:16%">今日阅读量</th>
+                                                <th style="width:16%">今日讨论量</th>
+                                                <th style="width:16%">今日互动量</th>
+                                                <th style="width:16%">今日原创量</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-2" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:16%">时间</th>
+                                                <th style="width:16%">今日阅读量</th>
+                                                <th style="width:16%">今日讨论量</th>
+                                                <th style="width:16%">今日互动量</th>
+                                                <th style="width:16%">今日原创量</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="gradeX">
+                                                <td>3.30</td>
+                                                <td>144406608</td>
+                                                <td>191849</td>
+                                                <td>743699</td>
+                                                <td>14484</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>3.31</td>
+                                                <td>198930692</td>
+                                                <td>161084</td>
+                                                <td>598246</td>
+                                                <td>14533</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.1</td>
+                                                <td>79316950</td>
+                                                <td>161585</td>
+                                                <td>510317</td>
+                                                <td>8802</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.2</td>
+                                                <td>73100341</td>
+                                                <td>118196</td>
+                                                <td>504687</td>
+                                                <td>9677</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.3</td>
+                                                <td>351481878</td>
+                                                <td>281094</td>
+                                                <td>881862</td>
+                                                <td>24175</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.4</td>
+                                                <td>204359898</td>
+                                                <td>185302</td>
+                                                <td>752538</td>
+                                                <td>17650</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.5</td>
+                                                <td>103101323</td>
+                                                <td>1211608</td>
+                                                <td>2491365</td>
+                                                <td>10693</td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th style="width:16%">时间</th>
+                                                <th style="width:16%">今日阅读量</th>
+                                                <th style="width:16%">今日讨论量</th>
+                                                <th style="width:16%">今日互动量</th>
+                                                <th style="width:16%">今日原创量</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                        {#              echarts              #}
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tab-3-3" class="tab-pane">
+                                <div class="item">
+                                    {#                            #}
+                                    <div>
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:16%">时间</th>
+                                                <th style="width:16%">今日阅读量</th>
+                                                <th style="width:16%">今日讨论量</th>
+                                                <th style="width:16%">今日互动量</th>
+                                                <th style="width:16%">今日原创量</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="gradeX">
+                                                <td>3.30</td>
+                                                <td>1242050</td>
+                                                <td>5156</td>
+                                                <td>8281</td>
+                                                <td>288</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>3.31</td>
+                                                <td>1560126</td>
+                                                <td>6162</td>
+                                                <td>12076</td>
+                                                <td>382</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.1</td>
+                                                <td>996570</td>
+                                                <td>6128</td>
+                                                <td>10775</td>
+                                                <td>351</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.2</td>
+                                                <td>876908</td>
+                                                <td>4486</td>
+                                                <td>7500</td>
+                                                <td>347</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.3</td>
+                                                <td>1164878</td>
+                                                <td>5732</td>
+                                                <td>8696</td>
+                                                <td>317</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.4</td>
+                                                <td>754660</td>
+                                                <td>5551</td>
+                                                <td>7993</td>
+                                                <td>223</td>
+                                            </tr>
+                                            <tr class="gradeX">
+                                                <td>4.5</td>
+                                                <td>626846</td>
+                                                <td>5097</td>
+                                                <td>7823</td>
+                                                <td>222</td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th style="width:16%">时间</th>
+                                                <th style="width:16%">今日阅读量</th>
+                                                <th style="width:16%">今日讨论量</th>
+                                                <th style="width:16%">今日互动量</th>
+                                                <th style="width:16%">今日原创量</th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                        {#              echarts              #}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--------------------------------上方数据表格--------------------------------------------->
+{#    <div>#}
+{#        <div class="col-lg-12">#}
+{#            <div class="ibox float-e-margins">#}
+{#                <div class="ibox-content">#}
+{#                    <div id="main指数xian" style="width:100%;height: 400px"></div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+   <div class="col-lg-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5></h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="#">选项1</a></li>
+                    <li><a href="#">选项2</a></li>
+                </ul>
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div style="height:430px" id="main3"></div>
+            <script type="text/javascript"
+                    src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+            <script type="text/javascript">
+                var dom = document.getElementById('main3');
+                var myChart = echarts.init(dom, null, {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+
+                var option = {
+                    title: {
+                        text: '七日原创量',
+                        subtext: 'data'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['315晚会', '哪吒2', 'deepseek']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            dataView: { show: true, readOnly: false },
+                            magicType: { show: true, type: ['line', 'bar'] },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [{
+                        type: 'category',
+                        data: ['3-30', '3-31', '4-1', '4-2', '4-3', '4-4', '4-5']
+                    }],
+                    yAxis: [{
+                        type: 'value'
+                    }],
+                    series: [
+                        {
+                            name: '315晚会',
+                            type: 'bar',
+                            data: [679, 933, 874, 796, 611, 718, 630],
+                            markPoint: {
+                                data: [
+                                    { type: 'max', name: 'Max' },
+                                    { type: 'min', name: 'Min' }
+                                ]
+                            },
+                            markLine: {
+                                data: [{ type: 'average', name: 'Avg' }]
+                            }
+                        },
+                        {
+                            name: '哪吒2',
+                            type: 'bar',
+                            data: [1484, 1453, 882, 967, 2417, 1765, 1019],
+                            markPoint: {
+                                data: [
+                                    { type: 'max', name: 'Max' },  // 修改为自动计算
+                                    { type: 'min', name: 'Min' }   // 修改为自动计算
+                                ]
+                            },
+                            markLine: {
+                                data: [{ type: 'average', name: 'Avg' }]
+                            }
+                        },
+                        {
+                            name: 'deepseek',
+                            type: 'bar',
+                            data: [288, 382, 351, 347, 317, 233, 214],
+                            markPoint: {
+                                data: [
+                                    { type: 'max', name: 'Max' },  // 修改为自动计算
+                                    { type: 'min', name: 'Min' }   // 修改为自动计算
+                                ]
+                            },
+                            markLine: {
+                                data: [{ type: 'average', name: 'Avg' }]
+                            }
+                        }
+                    ]
+                };
+
+                if (option && typeof option === 'object') {
+                    myChart.setOption(option);
+                }
+
+                window.addEventListener('resize', myChart.resize);
+            </script>
+        </div>
+    </div>
+</div>
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5></h5>
+                            <div class="ibox-tools">
+                                <!-- 保持原有工具栏结构不变 -->
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="graph_flot.html#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="graph_flot.html#">选项1</a></li>
+                                    <li><a href="graph_flot.html#">选项2</a></li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <!-- 三列布局 -->
+                            <div class="row">
+                                <!-- 饼图1 -->
+                                <div class="col-lg-4">
+                                    <div style="height:430px" id="main4-1"></div>
+                                </div>
+                                <!-- 饼图2 -->
+                                <div class="col-lg-4">
+                                    <div style="height:430px" id="main4-2"></div>
+                                </div>
+                                <!-- 饼图3 -->
+                                <div class="col-lg-4">
+                                    <div style="height:430px" id="main4-3"></div>
+                                </div>
+                            </div>
+
+                            <script type="text/javascript">
+                                // 通用配置生成函数
+                                function createPieOption(title, data) {
+                                    return {
+                                        title: {
+                                            text: title,
+                                            left: 'center'
+                                        },
+                                        tooltip: { trigger: 'item' },
+                                        legend: {
+                                            top: '8%',
+                                            left: 'center'
+                                        },
+                                        series: [{
+                                            name: '访问来源',
+                                            type: 'pie',
+                                            radius: ['35%', '65%'],
+                                            avoidLabelOverlap: false,
+                                            itemStyle: {
+                                                borderRadius: 10,
+                                                borderColor: '#fff',
+                                                borderWidth: 2
+                                            },
+                                            label: { show: false },
+                                            emphasis: {
+                                                label: {
+                                                    show: true,
+                                                    fontSize: 26,
+                                                    fontWeight: 'bold'
+                                                }
+                                            },
+                                            labelLine: { show: false },
+                                            data: data
+                                        }]
+                                    };
+                                }
+
+                                // 初始化三个饼图
+                                function initPieChart(containerId, title, data) {
+                                    var dom = document.getElementById(containerId);
+                                    var chart = echarts.init(dom, null, {
+                                        renderer: 'canvas',
+                                        useDirtyRect: false
+                                    });
+                                    chart.setOption(createPieOption(title, data));
+                                    return chart;
+                                }
+
+                                // 示例数据
+                                var chartData1 = [
+                                    { value: 23, name: '积极' },
+                                    { value: 34, name: '消极' },
+                                    { value: 7, name: '中性' }
+                                ];
+
+                                var chartData2 = [
+                                    { value: 39, name: '积极' },
+                                    { value: 9, name: '消极' },
+                                    { value: 6, name: '中性' }
+                                ];
+
+                                var chartData3 = [
+                                    { value: 51, name: '积极' },
+                                    { value: 10, name: '消极' },
+                                    { value: 6, name: '中性' }
+                                ];
+
+                                // 创建图表实例
+                                var pieChart1 = initPieChart('main4-1', '315晚会', chartData1);
+                                var pieChart2 = initPieChart('main4-2', '哪吒2', chartData2);
+                                var pieChart3 = initPieChart('main4-3', 'deepseek', chartData3);
+
+                                // 统一响应式处理
+                                window.addEventListener('resize', function() {
+                                    pieChart1.resize();
+                                    pieChart2.resize();
+                                    pieChart3.resize();
+                                    // 保留原有图表响应式（如果有）
+                                    if(typeof myChart !== 'undefined') myChart.resize();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+    <!-----------------表格切换------------------------>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>有关话题——信息追踪</strong></div>
+            <div class="panel-body">
+                <div class="panel-heading">
+                    <div class="panel-options">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab-2-1" data-toggle="tab">315晚会</a></li>
+                            <li><a href="#tab-2-2" data-toggle="tab">哪吒2之魔童闹海</a></li>
+                            <li><a href="#tab-2-3" data-toggle="tab">DeepSeek</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 标签内容容器 -->
+                <div class="tab-content">
+                    <!-- 315晚会 -->
+                    <div class="tab-pane active" id="tab-2-1">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <!-- 原有表格结构保持不变 -->
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50%">正面评论top</th>
+                                                    <th style="width:25%">讨论次数</th>
+                                                    <th style="width:25%">点赞次数</th>
+                                                    <th style="width:25%">用户</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for obj in data_1 %}
+                                                    <tr>
+                                                        <td>{{ obj.content }}</td>
+                                                        <td>{{ obj.comment_num }}</td>
+                                                        <td>{{ obj.like_num }}</td>
+                                                        <td>{{ obj.author }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50%">负面评论top</th>
+                                                    <th style="width:25%">讨论次数</th>
+                                                    <th style="width:25%">点赞数</th>
+                                                    <th style="width:25%">用户</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for obj in data_4 %}
+                                                    <tr>
+                                                        <td>{{ obj.content }}</td>
+                                                        <td>{{ obj.comment_num }}</td>
+                                                        <td>{{ obj.like_num }}</td>
+                                                        <td>{{ obj.author }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 哪吒2 -->
+                    <div class="tab-pane" id="tab-2-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50%">正面评论top</th>
+                                                    <th style="width:25%">讨论次数</th>
+                                                    <th style="width:25%">点赞次数</th>
+                                                    <th style="width:25%">用户</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for obj in data_2 %}
+                                                    <tr>
+                                                        <td>{{ obj.content }}</td>
+                                                        <td>{{ obj.comment_num }}</td>
+                                                        <td>{{ obj.like_num }}</td>
+                                                        <td>{{ obj.author }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50%">负面评论top</th>
+                                                    <th style="width:25%">讨论次数</th>
+                                                    <th style="width:25%">点赞数</th>
+                                                    <th style="width:25%">用户</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for obj in data_5 %}
+                                                    <tr>
+                                                        <td>{{ obj.content }}</td>
+                                                        <td>{{ obj.comment_num }}</td>
+                                                        <td>{{ obj.like_num }}</td>
+                                                        <td>{{ obj.author }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DeepSeek -->
+                    <div class="tab-pane" id="tab-2-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50%">正面评论top</th>
+                                                    <th style="width:25%">讨论次数</th>
+                                                    <th style="width:25%">点赞次数</th>
+                                                    <th style="width:25%">用户</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for obj in data_3 %}
+                                                    <tr>
+                                                        <td>{{ obj.content }}</td>
+                                                        <td>{{ obj.comment_num }}</td>
+                                                        <td>{{ obj.like_num }}</td>
+                                                        <td>{{ obj.author }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:50%">负面评论top</th>
+                                                    <th style="width:25%">讨论次数</th>
+                                                    <th style="width:25%">点赞数</th>
+                                                    <th style="width:25%">用户</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for obj in data_6 %}
+                                                    <tr>
+                                                        <td>{{ obj.content }}</td>
+                                                        <td>{{ obj.comment_num }}</td>
+                                                        <td>{{ obj.like_num }}</td>
+                                                        <td>{{ obj.author }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {#-------------------------------------上方超话追踪情感分析‘表格’切换---------------------------------------------#}
+
+
+    <div class="row">
+        <div class="col-lg-12"></div>
+        <div class="footer">
+            <div>
+                <strong>面向微博超话的情感检测系统</strong>
+                <!--——————————————————————    最底下的那一行字——————————————————————————    -->
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="../static/js/echarts.js"></script>
+
+    <script src="{% static '/js/echarts-wordcloud.js' %}"></script>
+    <!-- Mainly scripts -->
+    <script src="../static/js/jquery-2.1.1.min.js"></script>
+    <script src="../static/js/bootstrap.min.js?v=3.4.0"></script>
+    <script src="../static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <script src="../static/js/plugins/jeditable/jquery.jeditable.js"></script>
+
+    <!-- Data Tables -->
+    <script src="../static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="../static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="../static/js/hplus.js?v=2.2.0"></script>
+    <script src="../static/js/plugins/pace/pace.min.js"></script>
+
+    {#    <script src="../static/js/plugins/echarts/echarts-all.js"></script>#}
+
+{##}
+{#    <!-- Page-Level Scripts -->#}
+{#    <script>#}
+{#        $(function () {#}
+{##}
+{##}
+{#            var chartDom = document.getElementById('main指数xian');#}
+{#            var myChart = echarts.init(chartDom);#}
+{#            var option;#}
+{##}
+{#            option = {#}
+{#                title: {#}
+{#                    text: '近一周每日——情感指数追踪'#}
+{#                },#}
+{#                tooltip: {#}
+{#                    trigger: 'axis'#}
+{#                },#}
+{#                legend: {#}
+{#                    data: ['两会', '土耳其地震', '二十大']#}
+{#                },#}
+{#                grid: {#}
+{#                    left: '3%',#}
+{#                    right: '4%',#}
+{#                    bottom: '3%',#}
+{#                    containLabel: true#}
+{#                },#}
+{#                toolbox: {#}
+{#                    feature: {#}
+{#                        saveAsImage: {}#}
+{#                    }#}
+{#                },#}
+{#                xAxis: {#}
+{#                    type: 'category',#}
+{#                    boundaryGap: false,#}
+{#                    data: ['4.8', '4.9', '4.10', '4.11', '4.12', '4.13', '4.14']#}
+{#                },#}
+{#                yAxis: {#}
+{#                    type: 'value'#}
+{#                },#}
+{#                series: [#}
+{#                    {#}
+{#                        name: '两会',#}
+{#                        type: 'line',#}
+{#                        stack: 'Total',#}
+{#                        data: [0.9326, 0.9268, 0.8457, 0.9471, 0.9192, 0.8951, 0.9173]#}
+{#                    },#}
+{#                    {#}
+{#                        name: '土耳其地震',#}
+{#                        type: 'line',#}
+{#                        stack: 'Total',#}
+{#                        data: [0.3436, 0.1432, 0.2432, 0.3344, 0.1432, 0.2342, 0.1422]#}
+{#                    },#}
+{#                    {#}
+{#                        name: '二十大',#}
+{#                        type: 'line',#}
+{#                        stack: 'Total',#}
+{#                        data: [0.9826, 0.9468, 0.9157, 0.8471, 0.8192, 0.9458, 0.9592]#}
+{#                    }#}
+{#                ]#}
+{#            };#}
+{##}
+{#            option && myChart.setOption(option);#}
+{##}
+{#        });#}
+{##}
+{##}
+{#    </script>#}
+
+
+
+    <script type="text/javascript">
+
+        {#<!---------------------------------------------------------两会图1-------------------------------------------------->#}
+        var chartDom = document.getElementById('两会main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '阅读趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [4146, 3350, 3550, 34106, 72012, 2718, 2628, 2482, 3043, 2946, 3214, 8038, 4302, 3338, 3168, 3544, 2867, 3484, 3116, 3368],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------两会图2-------------------------------------------------->
+        var chartDom = document.getElementById('两会main2');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '讨论趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [22, 14, 0, 2, 5, 7, 7, 15, 19, 16, 32, 27, 19, 21, 22, 26, 17, 30, 16, 21],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------土耳其图1-------------------------------------------------->
+        var chartDom = document.getElementById('土耳其main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '阅读趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [98, 78, 58, 44, 46, 62, 40, 52, 100, 100, 118, 84, 66, 80, 90, 70, 72, 76, 84, 154],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------土耳其图2-------------------------------------------------->
+        var chartDom = document.getElementById('土耳其main2');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '讨论趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [10, 5, 4, 1, 3, 3, 7, 10, 13, 15, 13, 19, 15, 12, 18, 22, 12, 17, 13, 16],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------二十大图1-------------------------------------------------->
+        var chartDom = document.getElementById('二十大main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '阅读趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [668, 386, 278, 336, 400, 348, 308, 936, 806, 560, 716, 868, 504, 446, 1344, 840, 1003, 964, 860, 642],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+        <!---------------------------------------------------------二十大图2-------------------------------------------------->
+        var chartDom = document.getElementById('二十大main2');
+        var myChart = echarts.init(chartDom);
+        var option;
+        option = {
+            title: {
+                text: '讨论趋势',
+                {#subtext: 'Fake Data'#}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                // prettier-ignore
+                data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisPointer: {
+                    snap: true
+                }
+            },
+            visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [
+                    {
+                        lte: 6,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 6,
+                        lte: 8,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 8,
+                        lte: 14,
+                        color: 'LightSkyBlue'
+                    },
+                    {
+                        gt: 14,
+                        lte: 17,
+                        color: '	LightCoral'
+                    },
+                    {
+                        gt: 17,
+                        color: 'LightSkyBlue'
+                    }
+                ]
+            },
+            series: [
+                {
+                    name: 'Electricity',
+                    type: 'line',
+                    smooth: true,
+                    // prettier-ignore
+                    data: [15, 10, 9, 9, 8, 5, 3, 3, 2, 2, 5, 7, 3, 8, 4, 2, 10, 9, 6, 3],
+                    markArea: {
+                        itemStyle: {
+                            color: 'rgba(255, 173, 177, 0.4)'
+                        },
+                        data: [
+                            [
+                                {
+                                    name: 'Morning Peak',
+                                    xAxis: '07:30'
+                                },
+                                {
+                                    xAxis: '10:00'
+                                }
+                            ],
+                            [
+                                {
+                                    name: 'Evening Peak',
+                                    xAxis: '17:30'
+                                },
+                                {
+                                    xAxis: '21:15'
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+        option && myChart.setOption(option);
+    </script>
+
+    {#------------------------------------main1,main2原来的图，与置顶话题热度对比，---该话题信息以及趋势展示------------------------------------------------------------------#}
+    <script>
+        $(document).ready(function () {
+            $('.dataTables-example').dataTable();
+
+            /* Init DataTables */
+            var oTable = $('#editable').dataTable();
+
+            /* Apply the jEditable handlers to the table */
+            oTable.$('td').editable('../example_ajax.php', {
+                "callback": function (sValue, y) {
+                    var aPos = oTable.fnGetPosition(this);
+                    oTable.fnUpdate(sValue, aPos[0], aPos[1]);
+                },
+                "submitdata": function (value, settings) {
+                    return {
+                        "row_id": this.parentNode.getAttribute('id'),
+                        "column": oTable.fnGetPosition(this)[2]
+                    };
+                },
+
+                "width": "90%",
+                "height": "100%"
+            });
+
+
+        });
+
+        function fnClickAddRow() {
+            $('#editable').dataTable().fnAddData([
+                "Custom row",
+                "New row",
+                "New row",
+                "New row",
+                "New row"]);
+
+        }
+    </script>
+
+
+    <script>
+        var chartDom = document.getElementById('main1');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            title: {
+                text: ''
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['两会', '土耳其', '二十大']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '两会',
+                    type: 'line',
+                    stack: 'Total',
+                    data: [1235, 3132, 3234, 3134, 2190, 2230, 2910]
+                },
+                {
+                    name: '土耳其',
+                    type: 'line',
+                    stack: 'Total',
+                    data: [2220, 2102, 2191, 2934, 2290, 2130, 2310]
+                },
+                {
+                    name: '二十大',
+                    type: 'line',
+                    stack: 'Total',
+                    data: [1150, 1232, 2201, 2154, 3190, 3330, 2410]
+                }
+            ]
+        };
+
+        option && myChart.setOption(option);    </script>
+    {#-------------------------------三个话题的饼图和折线图-------------------------------------------------------#}
+
+    <script>
+        $(document).ready(function () {
+            <!-- Enable portlets -->
+            WinMove();
+        });
+    </script>
+
+{% endblock %}

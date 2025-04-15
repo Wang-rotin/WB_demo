@@ -1,0 +1,437 @@
+{% extends "new_layout_2.html" %}
+{% load static %}
+{% block css %}
+
+    <link href="../static/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+    <link href="../static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    {##}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+{% endblock %}
+{% block content %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>各类型榜单热度</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">选项1</a></li>
+                                <li><a href="#">选项2</a></li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div style="height:600px" id="bangdan"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                 <script type="text/javascript"
+                         src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+                <script>
+                var chartDom = document.getElementById('bangdan');
+                var myChart = echarts.init(chartDom);
+
+                var option = {
+                  tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                      type: 'shadow'
+                    }
+                  },
+                  grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                  },
+                  xAxis: [
+                    {
+                      type: 'category',
+                      data: ['热搜', '文娱', '要闻', '校园', '游戏', '体育'],
+                      axisTick: {
+                        alignWithLabel: true
+                      }
+                    }
+                  ],
+                  yAxis: [
+                    {
+                      type: 'value'
+                    }
+                  ],
+                  series: [
+                    {
+                      name: '热度值',
+                      type: 'bar',
+                      barWidth: '60%',
+                      data: [6603402, 8945032, 3934256, 5980313, 4839621, 4972420],
+                      itemStyle: {
+                        color: '#85abff' // 推荐使用与网页风格一致的配色
+                      }
+                    }
+                  ]
+                };
+
+                // 添加自适应响应
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                });
+
+                option && myChart.setOption(option);
+                </script>
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">各类型话题——情感分析</div>
+            <div class="panel-body">
+                <div class="panel-heading">
+                    <div class="panel-options">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-11">热搜</a></li>
+                            <li><a data-toggle="tab" href="#tab-12">文娱</a></li>
+                            <li><a data-toggle="tab" href="#tab-13">要闻</a></li>
+                            <li><a data-toggle="tab" href="#tab-14">校园</a></li>
+                            <li><a data-toggle="tab" href="#tab-15">游戏</a></li>
+                            <li><a data-toggle="tab" href="#tab-16">体育</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <!-- 热搜标签页 -->
+                        <div id="tab-11" class="tab-pane active">
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 标题及详情</th>
+                                        <th style="width:35%">💖 情感分析</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in hot_1 %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-size:24px;color:#2c3e50;font-weight:600;">
+                                                {{ obj.title }}
+                                            </div>
+                                            <div style="font-size:14px;color:#4a4a4a;margin:10px 0;">
+                                                {{ obj.content }}
+                                            </div>
+                                            <div class="interaction-stats comment-meta" style="color:#6c757d;">
+                                                热度：{{ obj.hot_num }} &nbsp;&nbsp;
+                                                <a href="{{ obj.href }}" style="color:#2E8B57;text-decoration:underline;">查看原文>></a>
+                                            </div>
+                                        </td>
+                                        <td class="sentiment-cell" style="vertical-align:middle;text-align:center;">
+                                            <div style="font-size:16px;font-weight:500;color:
+                                                {% if obj.key_s == '积极' %}#2E8B57
+                                                {% elif obj.key_s == '中性' %}#FFA500
+                                                {% else %}#FF6B6B
+                                                {% endif %}">
+                                                {{ obj.key_s }}
+                                                <span style="margin-left:8px;">
+                                                    {% if obj.key_s == '积极' %}✅
+                                                    {% elif obj.key_s == '中性' %}🟡
+                                                    {% else %}❌{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size:12px;color:#95a5a6;margin-top:5px;">
+                                                {% if obj.key_s == '积极' %}正面评价占优
+                                                {% elif obj.key_s == '中性' %}观点较为中立
+                                                {% else %}存在负面倾向{% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 文娱标签页 -->
+                        <div id="tab-12" class="tab-pane">
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 标题及详情</th>
+                                        <th style="width:35%">💖 情感分析</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in hot_2 %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-size:24px;color:#2c3e50;font-weight:600;">
+                                                {{ obj.title }}
+                                            </div>
+                                            <div style="font-size:14px;color:#4a4a4a;margin:10px 0;">
+                                                {{ obj.content }}
+                                            </div>
+                                            <div class="interaction-stats comment-meta" style="color:#6c757d;">
+                                                热度：{{ obj.hot_num }} &nbsp;&nbsp;
+                                                <a href="{{ obj.href }}" style="color:#2E8B57;text-decoration:underline;">查看原文>></a>
+                                            </div>
+                                        </td>
+                                        <td class="sentiment-cell" style="vertical-align:middle;text-align:center;">
+                                            <div style="font-size:16px;font-weight:500;color:
+                                                {% if obj.key_s == '积极' %}#2E8B57
+                                                {% elif obj.key_s == '中性' %}#FFA500
+                                                {% else %}#FF6B6B
+                                                {% endif %}">
+                                                {{ obj.key_s }}
+                                                <span style="margin-left:8px;">
+                                                    {% if obj.key_s == '积极' %}✅
+                                                    {% elif obj.key_s == '中性' %}🟡
+                                                    {% else %}❌{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size:12px;color:#95a5a6;margin-top:5px;">
+                                                {% if obj.key_s == '积极' %}正面评价占优
+                                                {% elif obj.key_s == '中性' %}观点较为中立
+                                                {% else %}存在负面倾向{% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 要闻标签页 -->
+                        <div id="tab-13" class="tab-pane">
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 标题及详情</th>
+                                        <th style="width:35%">💖 情感分析</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in hot_3 %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-size:24px;color:#2c3e50;font-weight:600;">
+                                                {{ obj.title }}
+                                            </div>
+                                            <div style="font-size:14px;color:#4a4a4a;margin:10px 0;">
+                                                {{ obj.content }}
+                                            </div>
+                                            <div class="interaction-stats comment-meta" style="color:#6c757d;">
+                                                热度：{{ obj.hot_num }} &nbsp;&nbsp;
+                                                <a href="{{ obj.href }}" style="color:#2E8B57;text-decoration:underline;">查看原文>></a>
+                                            </div>
+                                        </td>
+                                        <td class="sentiment-cell" style="vertical-align:middle;text-align:center;">
+                                            <div style="font-size:16px;font-weight:500;color:
+                                                {% if obj.key_s == '积极' %}#2E8B57
+                                                {% elif obj.key_s == '中性' %}#FFA500
+                                                {% else %}#FF6B6B
+                                                {% endif %}">
+                                                {{ obj.key_s }}
+                                                <span style="margin-left:8px;">
+                                                    {% if obj.key_s == '积极' %}✅
+                                                    {% elif obj.key_s == '中性' %}🟡
+                                                    {% else %}❌{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size:12px;color:#95a5a6;margin-top:5px;">
+                                                {% if obj.key_s == '积极' %}正面评价占优
+                                                {% elif obj.key_s == '中性' %}观点较为中立
+                                                {% else %}存在负面倾向{% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 校园标签页 -->
+                        <div id="tab-14" class="tab-pane">
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 标题及详情</th>
+                                        <th style="width:35%">💖 情感分析</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in hot_4 %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-size:24px;color:#2c3e50;font-weight:600;">
+                                                {{ obj.title }}
+                                            </div>
+                                            <div style="font-size:14px;color:#4a4a4a;margin:10px 0;">
+                                                {{ obj.content }}
+                                            </div>
+                                            <div class="interaction-stats comment-meta" style="color:#6c757d;">
+                                                热度：{{ obj.hot_num }} &nbsp;&nbsp;
+                                                <a href="{{ obj.href }}" style="color:#2E8B57;text-decoration:underline;">查看原文>></a>
+                                            </div>
+                                        </td>
+                                        <td class="sentiment-cell" style="vertical-align:middle;text-align:center;">
+                                            <div style="font-size:16px;font-weight:500;color:
+                                                {% if obj.key_s == '积极' %}#2E8B57
+                                                {% elif obj.key_s == '中性' %}#FFA500
+                                                {% else %}#FF6B6B
+                                                {% endif %}">
+                                                {{ obj.key_s }}
+                                                <span style="margin-left:8px;">
+                                                    {% if obj.key_s == '积极' %}✅
+                                                    {% elif obj.key_s == '中性' %}🟡
+                                                    {% else %}❌{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size:12px;color:#95a5a6;margin-top:5px;">
+                                                {% if obj.key_s == '积极' %}正面评价占优
+                                                {% elif obj.key_s == '中性' %}观点较为中立
+                                                {% else %}存在负面倾向{% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 游戏标签页 -->
+                        <div id="tab-15" class="tab-pane">
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 标题及详情</th>
+                                        <th style="width:35%">💖 情感分析</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in hot_5 %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-size:24px;color:#2c3e50;font-weight:600;">
+                                                {{ obj.title }}
+                                            </div>
+                                            <div style="font-size:14px;color:#4a4a4a;margin:10px 0;">
+                                                {{ obj.content }}
+                                            </div>
+                                            <div class="interaction-stats comment-meta" style="color:#6c757d;">
+                                                热度：{{ obj.hot_num }} &nbsp;&nbsp;
+                                                <a href="{{ obj.href }}" style="color:#2E8B57;text-decoration:underline;">查看原文>></a>
+                                            </div>
+                                        </td>
+                                        <td class="sentiment-cell" style="vertical-align:middle;text-align:center;">
+                                            <div style="font-size:16px;font-weight:500;color:
+                                                {% if obj.key_s == '积极' %}#2E8B57
+                                                {% elif obj.key_s == '中性' %}#FFA500
+                                                {% else %}#FF6B6B
+                                                {% endif %}">
+                                                {{ obj.key_s }}
+                                                <span style="margin-left:8px;">
+                                                    {% if obj.key_s == '积极' %}✅
+                                                    {% elif obj.key_s == '中性' %}🟡
+                                                    {% else %}❌{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size:12px;color:#95a5a6;margin-top:5px;">
+                                                {% if obj.key_s == '积极' %}正面评价占优
+                                                {% elif obj.key_s == '中性' %}观点较为中立
+                                                {% else %}存在负面倾向{% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 体育标签页 -->
+                        <div id="tab-16" class="tab-pane">
+                            <table class="table table-striped table-bordered table-hover dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th style="width:65%">📝 标题及详情</th>
+                                        <th style="width:35%">💖 情感分析</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for obj in hot_6 %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-size:24px;color:#2c3e50;font-weight:600;">
+                                                {{ obj.title }}
+                                            </div>
+                                            <div style="font-size:14px;color:#4a4a4a;margin:10px 0;">
+                                                {{ obj.content }}
+                                            </div>
+                                            <div class="interaction-stats comment-meta" style="color:#6c757d;">
+                                                热度：{{ obj.hot_num }} &nbsp;&nbsp;
+                                                <a href="{{ obj.href }}" style="color:#2E8B57;text-decoration:underline;">查看原文>></a>
+                                            </div>
+                                        </td>
+                                        <td class="sentiment-cell" style="vertical-align:middle;text-align:center;">
+                                            <div style="font-size:16px;font-weight:500;color:
+                                                {% if obj.key_s == '积极' %}#2E8B57
+                                                {% elif obj.key_s == '中性' %}#FFA500
+                                                {% else %}#FF6B6B
+                                                {% endif %}">
+                                                {{ obj.key_s }}
+                                                <span style="margin-left:8px;">
+                                                    {% if obj.key_s == '积极' %}✅
+                                                    {% elif obj.key_s == '中性' %}🟡
+                                                    {% else %}❌{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size:12px;color:#95a5a6;margin-top:5px;">
+                                                {% if obj.key_s == '积极' %}正面评价占优
+                                                {% elif obj.key_s == '中性' %}观点较为中立
+                                                {% else %}存在负面倾向{% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="row">
+        <div class="col-lg-12"></div>
+        <div class="footer">
+            <div>
+                <strong>面向微博超话的情感检测系统</strong>
+                <!--——————————————————————    最底下的那一行字——————————————————————————    -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+
+    <script src="../static/js/echarts-wordcloud.js"></script>
+    <!-- Mainly scripts -->
+    <script src="../static/js/jquery-2.1.1.min.js"></script>
+
+    <!-- Data Tables -->
+    <script src="../static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="../static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <script src="../static/js/plugins/echarts/echarts-all.js"></script>
+
+{% endblock %}

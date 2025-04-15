@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>面向微博超话的情感检测系统</title>
+
+    {#    <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}">#}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    {#   bootstrap  #}
+    <link href="/app01/static/css/style.css?v=2.2.0" rel="stylesheet">
+    {#    <link href="../static/css/style.css?v=2.2.0" rel="stylesheet">#}
+
+    {#   font-awesome  #}
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+
+
+    {#——————————————————————————————————————————我是分割线————————————————————————————————————————————————————————————#}
+
+    <!-- Morris -->
+    <link href="/app01/static/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+
+    <!-- Gritter -->
+    <link href="/app01/static/js/plugins/gritter/jquery.gritter.css" rel="stylesheet">
+
+    <link href="/app01/static/css/animate.css" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+</head>
+
+<body>
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header">
+
+                    <div class="dropdown profile-element"><span>
+                            <img alt="image" class="img-circle" src="{% static 'img/profile_small.jpg' %}"/>
+                             </span>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear"> <span class="block m-t-xs"> <strong
+                                        class="font-bold">吴东林</strong>
+                             </span>  <span class="text-muted text-xs block">物联网211<b
+                                        class="caret"></b></span> </span>
+                        </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a href="#">个人资料</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="/login/">安全退出</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        wb
+                    </div>
+                </li>
+                <li class="active">
+                    <a href="/index_2/"><i class="fa fa-th-large"></i><span class="nav-label">系统首页</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="/index_2/">信息总览</a>
+                        </li>
+                    </ul>
+                <li class="active">
+                    <a href="/task_list/"><i class="fa fa-themeisle"></i><span class="nav-label">任务控制</span><span
+                            class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        </li>
+                        <li><a href="/task_list/">新建任务</a>
+                        </li>
+                        <li><a href="/guanli_task/">管理任务</a>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/analyse/"><i class="fa fa-files-o"></i> <span class="nav-label">情感分析</span></a>
+                </li>
+                <li>
+                    <a href="/trace/"><i class="fa fa-thermometer-empty"></i> <span
+                            class="nav-label">超话追踪</span></a>
+                </li>
+                <li>
+                    <a href="/project_detail/"><i class="fa fa-folder"></i> <span
+                            class="nav-label">微博详情 </span></a>
+                </li>
+                <li>
+                    <a href="/id_guanli/"><i class="fa fa-thumb-tack"></i> <span
+                            class="nav-label">账号管理</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i
+                            class="fa fa-bars"></i></a>
+                </div>
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                        <span class="m-r-sm text-muted welcome-message"><a href="/index_2/" title="返回首页"><i
+                                class="fa fa-home"></i></a>欢迎使用面向微博超话的情感检测系统</span>
+                    </li>
+                    <li>
+                        <a href="/login/">
+                            <i class="fa fa-sign-out"></i> 退出
+                            <!--  ——————————————————————标题导航栏———————————————————————————————————————————— -->
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div>
+            {% block content %}{% endblock %}
+            {#   横置小导航栏，分页1——10         #}
+            <div class="row">
+                <div class="col-lg-12"></div>
+                <div class="footer">
+                    <div>
+                        <strong>面向微博超话的情感检测系统</strong>
+                        <!--——————————————————————    最底下的那一行字   ——————————————————————————    -->
+                    </div>
+                </div>
+            </div>
+            {#      最底行 “ 面向微博超话的情感检测系统” 那行小字    #}
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static '/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/echarts.js' %}"></script>
+{% block js %}{% endblock %}
+
+
+{#<!-- Custom and plugin javascript -->#}
+<script src="/app01/static/js/plugins/pace/pace.min.js"></script>
+{#<!-- jQuery UI -->#}
+<script src="/app01/static/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+{#___________________________________________________________________________________________________________#}
+
+
+<script src="/app01/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/app01/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Flot -->
+<script src="/app01/static/js/plugins/flot/jquery.flot.js"></script>
+<script src="/app01/static/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script src="/app01/static/js/plugins/flot/jquery.flot.spline.js"></script>
+<script src="/app01/static/js/plugins/flot/jquery.flot.resize.js"></script>
+<script src="/app01/static/js/plugins/flot/jquery.flot.pie.js"></script>
+
+<!-- Peity -->
+<script src="/app01/static/js/plugins/peity/jquery.peity.min.js"></script>
+<script src="/app01/static/js/demo/peity-demo.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/app01/static/js/hplus.js?v=2.2.0"></script>
+<script src="/app01/static/js/plugins/pace/pace.min.js"></script>
+
+<!-- jQuery UI -->
+<script src="/app01/static/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+<!-- GITTER -->
+<script src="/app01/static/js/plugins/gritter/jquery.gritter.min.js"></script>
+
+<!-- EayPIE -->
+<script src="/app01/static/js/plugins/easypiechart/jquery.easypiechart.js"></script>
+
+<!-- Sparkline -->
+<script src="/app01/static/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+
+<!-- Sparkline demo data  -->
+<script src="/app01/static/js/demo/sparkline-demo.js"></script>
+
+
+</body>
+
+</html>

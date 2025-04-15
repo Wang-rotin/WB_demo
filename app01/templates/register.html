@@ -1,0 +1,177 @@
+{% load static %}
+<html>
+{% block css %}
+    <style>
+
+    body, html {
+            margin: 0;
+            height: 100vh; /* 使页面高度占满 */
+            overflow: hidden; /* 禁止滚动 */
+            display: flex; /* 添加Flexbox布局 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+        }
+    body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:  url('{% static "/img_new/register2.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2; /* 确保背景图在视频后面 */
+        }
+        .bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1; /* 使视频在内容后面 */
+            transform: translate(-50%, -50%);
+        }
+        middle-box {
+        position: relative;
+        z-index: 1;
+        color: white; /* 父元素的文本颜色仍为白色 */
+        background-color: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    /* 新增输入框字体颜色样式 */
+    .form-control {
+        color: black !important; /* 强制覆盖其他样式 */
+    }
+
+
+    </style>
+
+{% endblock %}
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>账号注册</title>
+
+    <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}">
+    <link href="../static/css/style.css?v=2.2.0" rel="stylesheet">{#    引用css#}
+
+</head>
+
+<body class="gray-bg">
+<video autoplay muted loop poster="video.jpg" class="bg-video">
+         <source src="{% static '/video/background.mp4' %}" type="video/mp4">  {# 引用video#}
+    <source src="{% static '/video/background.webm' %}" type="video/webm">
+    <source src="{% static '/video/background.ogg' %}" type="video/ogg">
+    Your browser does not support the video tag.
+    </video>
+
+<div class="middle-box text-center loginscreen   animated fadeInDown">
+    <div>
+        <div>
+
+            <h1 class="logo-name" style="color: #fbffca">wb</h1>
+
+        </div>
+        <h3>欢迎注册 </h3>
+        <p>创建一个新账户</p>
+        <form class="m-t" role="form" action="/register/" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control" name="username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="email" placeholder="请输入邮箱">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" name="password" placeholder="请再次输入密码">
+            </div>
+            <div class="form-group text-left">
+                <div class="checkbox i-checks">
+                    <label class="no-padding">
+                        <input type="checkbox"><i></i> 我同意注册协议</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b">注 册</button>
+            <p style="color: red;text-align: center">{{ error_name }}</p>
+
+            <p class="text-muted text-center"><small>已经有账户了？</small><a href="/login/">点此登录</a>
+            </p>
+        </form>
+    </div>
+</div>
+<script src="{% static '/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static '/js/bootstrap.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+</script>
+<script>
+    !function () {
+        function n(n, e, t) {
+            return n.getAttribute(e) || t
+        }
+
+        function e(n) {
+            return document.getElementsByTagName(n)
+        }
+
+        function t() {
+            var t = e("script"), o = t.length, i = t[o - 1];
+            return {
+                l: o,
+                z: n(i, "zIndex", -1),
+                o: n(i, "opacity", .5),
+                c: n(i, "color", "0,0,0"),
+                n: n(i, "count", 99)
+            }
+        }
+
+        function o() {
+            a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth, c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        }
+
+        function i() {
+            r.clearRect(0, 0, a, c);
+            var n, e, t, o, m, l;
+            s.forEach(function (i, x) {
+                for (i.x += i.xa, i.y += i.ya, i.xa *= i.x > a || i.x < 0 ? -1 : 1, i.ya *= i.y > c || i.y < 0 ? -1 : 1, r.fillRect(i.x - .5, i.y - .5, 1, 1), e = x + 1; e < u.length; e++) n = u[e], null !== n.x && null !== n.y && (o = i.x - n.x, m = i.y - n.y, l = o * o + m * m, l < n.max && (n === y && l >= n.max / 2 && (i.x -= .03 * o, i.y -= .03 * m), t = (n.max - l) / n.max, r.beginPath(), r.lineWidth = t / 2, r.strokeStyle = "rgba(" + d.c + "," + (t + .2) + ")", r.moveTo(i.x, i.y), r.lineTo(n.x, n.y), r.stroke()))
+            }), x(i)
+        }
+
+        var a, c, u, m = document.createElement("canvas"), d = t(), l = "c_n" + d.l, r = m.getContext("2d"),
+            x = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (n) {
+                window.setTimeout(n, 1e3 / 45)
+            }, w = Math.random, y = {x: null, y: null, max: 2e4};
+        m.id = l, m.style.cssText = "position:fixed;top:0;left:0;z-index:" + d.z + ";opacity:" + d.o, e("body")[0].appendChild(m), o(), window.onresize = o, window.onmousemove = function (n) {
+            n = n || window.event, y.x = n.clientX, y.y = n.clientY
+        }, window.onmouseout = function () {
+            y.x = null, y.y = null
+        };
+        for (var s = [], f = 0; d.n > f; f++) {
+            var h = w() * a, g = w() * c, v = 2 * w() - 1, p = 2 * w() - 1;
+            s.push({x: h, y: g, xa: v, ya: p, max: 6e3})
+        }
+        u = s.concat([y]), setTimeout(function () {
+            i()
+        }, 100)
+    }();
+</script>
+
+
+</body>
+
+</html>
